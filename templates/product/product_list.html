@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Products</title>
+    <link rel="stylesheet" href="{% static 'css/products.css' %}">
+</head>
+<body>
+
+{% for product in products %}
+<div class="product-container">
+    <h2>{{ product.name }}</h2>
+
+    <div class="price-frame">
+        {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" width="200">
+        {% endif %}
+
+        <div class="row">
+            <span>Stock</span>
+            <span>{{ product.stock }}</span>
+        </div>
+
+        <div class="row">
+            <span>MRP</span>
+            <span>₹{{ product.mrp }}</span>
+        </div>
+
+        <div class="row">
+            <span>Rate</span>
+            <span>₹{{ product.rate }}</span>
+        </div>
+
+        <a href="{% url 'product_detail' product.id %}">View</a>
+    </div>
+</div>
+{% endfor %}
+
+</body>
+</html>

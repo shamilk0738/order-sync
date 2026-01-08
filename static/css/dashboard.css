@@ -1,0 +1,82 @@
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #f4f6f8;
+}
+
+.topbar {
+    background: linear-gradient(to right, #0f4c81, #1e88e5);
+    color: white;
+    padding: 15px;
+    font-size: 18px;
+}
+
+.container {
+    display: flex;
+}
+
+.sidebar {
+    width: 220px;
+    background: #0f3057;
+    min-height: 100vh;
+}
+
+.sidebar a {
+    display: block;
+    color: white;
+    padding: 15px;
+    text-decoration: none;
+}
+
+.sidebar a:hover {
+    background: #1e88e5;
+}
+
+.content {
+    padding: 20px;
+    width: 100%;
+}
+
+.cards {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.card {
+    flex: 1;
+    padding: 20px;
+    color: white;
+    border-radius: 6px;
+}
+
+.blue { background: #1e88e5; }
+.orange { background: #fb8c00; }
+.green { background: #43a047; }
+.cyan { background: #039be5; }
+
+.section {
+    background: white;
+    padding: 20px;
+    border-radius: 6px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.pending {
+    color: orange;
+    font-weight: bold;
+}
+
+.completed {
+    color: green;
+    font-weight: bold;
+}

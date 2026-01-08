@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Staff Records</title>
+    <link rel="stylesheet" href="{% static 'css/staff.css' %}">
+</head>
+<body>
+
+<h2>Staff Records</h2>
+
+<div class="staff-container">
+    {% for staff in staffs %}
+    <div class="staff-card">
+
+        {% if staff.photo %}
+            <img src="{{ staff.photo.url }}" alt="photo">
+        {% else %}
+            <img src="{% static 'images/default.png' %}" alt="no photo">
+        {% endif %}
+
+        <h3>{{ staff.name }}</h3>
+        <p><b>Position:</b> {{ staff.position }}</p>
+        <p><b>Phone:</b> {{ staff.phone }}</p>
+        <p><b>Supply Route:</b> {{ staff.supply_route }}</p>
+
+    </div>
+    {% endfor %}
+</div>
+
+</body>
+</html>

@@ -1,0 +1,53 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+
+<h2>Admin Dashboard</h2>
+
+<div class="cards">
+    <div class="card blue">
+        <h3>Total Orders</h3>
+        <p>125</p>
+    </div>
+
+    <div class="card orange">
+        <h3>Pending Orders</h3>
+        <p>18</p>
+    </div>
+
+    <div class="card green">
+        <h3>Staff Members</h3>
+        <p>24</p>
+    </div>
+
+    <div class="card cyan">
+        <h3>Stores Visited</h3>
+        <p>15</p>
+    </div>
+</div>
+
+<div class="section">
+    <h3>Latest Orders</h3>
+    <table>
+        <tr>
+            <th>Shop</th>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Status</th>
+        </tr>
+        <tr>
+            <td>Patel Traders</td>
+            <td>Rice Bags</td>
+            <td>50</td>
+            <td class="pending">Pending</td>
+        </tr>
+        <tr>
+            <td>City Mart</td>
+            <td>Soft Drinks</td>
+            <td>30</td>
+            <td class="completed">Completed</td>
+        </tr>
+    </table>
+</div>
+
+{% endblock %}

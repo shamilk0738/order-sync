@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ product.name }}</title>
+    <link rel="stylesheet" href="{% static 'css/products.css' %}">
+</head>
+<body>
+
+<div class="product-container">
+    <h2>{{ product.name }}</h2>
+
+    <div class="price-frame">
+
+        {% if product.image %}
+    <img src="{{ product.image.url }}" alt="{{ product.name }}" width="300">
+{% endif %}
+
+        
+        <div class="row">
+            <span>Stock</span>
+            <span>{{ product.stock }}</span>
+        </div>
+
+        <div class="row">
+            <span>MRP</span>
+            <span>₹{{ product.mrp }}</span>
+        </div>
+
+        <div class="row">
+            <span>Rate</span>
+            <span>₹{{ product.rate }}</span>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="row">
+                <span>Quantity</span>
+                <input type="number" name="quantity" min="1" max="{{ product.stock }}" required>
+            </div>
+
+            <button type="submit">Calculate</button>
+        </form>
+
+        {% if total %}
+            <h3>Total Amount: ₹{{ total }}</h3>
+        {% endif %}
+
+        <br>
+        <a href="{% url 'product_list' %}">← Back to Products</a>
+    </div>
+</div>
+
+</body>
+</html>

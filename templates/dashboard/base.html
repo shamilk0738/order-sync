@@ -14,12 +14,12 @@
 <div class="container">
 
     <div class="sidebar">
-        <a href="#">Dashboard</a>
-        <a href="#">Orders</a>
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <a href="{% url 'orders_list' %}">Orders</a>
         <a href="#">Stores</a>
-        <a href="{% url 'product_list' %}">Products</a>
+        <a href="{% url 'create_order' %}">Products</a>
         <a href="#">Attendance</a>
-        <a href="#">Staff Records</a>
+        <a href="{% url 'staff_index' %}">Staff Records</a>
         <a href="#">Reports</a>
     </div>
 

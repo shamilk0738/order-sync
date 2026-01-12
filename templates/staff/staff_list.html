@@ -1,32 +1,22 @@
+{% extends 'dashboard/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Staff Records</title>
-    <link rel="stylesheet" href="{% static 'css/staff.css' %}">
-</head>
-<body>
 
-<h2>Staff Records</h2>
+{% block content %}
 
-<div class="staff-container">
-    {% for staff in staffs %}
-    <div class="staff-card">
+<h2>All Users</h2>
 
-        {% if staff.photo %}
-            <img src="{{ staff.photo.url }}" alt="photo">
-        {% else %}
-            <img src="{% static 'images/default.png' %}" alt="no photo">
-        {% endif %}
+<div class="user-container">
 
-        <h3>{{ staff.name }}</h3>
-        <p><b>Position:</b> {{ staff.position }}</p>
-        <p><b>Phone:</b> {{ staff.phone }}</p>
-        <p><b>Supply Route:</b> {{ staff.supply_route }}</p>
-
-    </div>
+    {% for user in users %}
+        <div class="user-card">
+            <h3>{{ user.get_full_name|default:user.username }}</h3>
+            <p><b>Email:</b> {{ user.email }}</p>
+            <p><b>Joined:</b> {{ user.date_joined|date:"Y-m-d" }}</p>
+        </div>
+    {% empty %}
+        <p>No users found.</p>
     {% endfor %}
+
 </div>
 
-</body>
-</html>
+{% endblock %}

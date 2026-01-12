@@ -1,0 +1,21 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+
+
+
+<h2>All Orders</h2>
+
+{% for order in orders %}
+<div style="border:1px solid #aaa; margin:10px; padding:10px;">
+    <b>Order:</b> {{ order.order_name }}<br>
+    <b>User:</b> {{ order.user.username }}<br>
+    <b>Status:</b> {{ order.get_status_display }}<br>
+    <b>Date:</b> {{ order.created_at }}<br>
+    <b>Total:</b> {{ order.total_price }}<br>
+    <a href="{% url 'order_detail' order.id %}">View Details</a>
+</div>
+{% endfor %}
+
+
+{% endblock %}

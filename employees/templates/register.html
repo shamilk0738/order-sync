@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Register</title>
+</head>
+<body>
+
+<h2>Employee Registration</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <label>Username</label><br>
+    {{ form.username }}<br><br>
+
+    <label>Email</label><br>
+    {{ form.email }}<br><br>
+
+    <label>Password</label><br>
+    {{ form.password }}<br><br>
+
+    <label>Employee ID</label><br>
+    {{ form.emp_id }}<br><br>
+
+    <label>Phone</label><br>
+    {{ form.phone }}<br><br>
+
+    <label>Join Date</label><br>
+    {{ form.join_date }}<br><br>
+
+    <label>Attendance Percentage</label><br>
+    {{ form.attendance_percentage }}<br><br>
+
+    <button type="submit">Register</button>
+</form>
+
+<p style="color:red;">{{ error }}</p>
+
+<p>
+    Already registered?
+    <a href="{% url 'login' %}">Login</a>
+</p>
+
+</body>
+</html>

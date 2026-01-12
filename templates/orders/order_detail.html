@@ -1,0 +1,29 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+
+
+<h2>Order Details</h2>
+
+<p><b>Order Name:</b> {{ order.order_name }}</p>
+<p><b>User:</b> {{ order.user.username }}</p>
+<p><b>Status:</b> {{ order.get_status_display }}</p>
+<p><b>Date:</b> {{ order.created_at }}</p>
+
+<h3>Products</h3>
+<ul>
+{% for item in order.items.all %}
+    <li>
+        {{ item.product.name }} –
+        Quantity: {{ item.quantity }} –
+        Rate: {{ item.product.rate }} –
+        Subtotal: {{ item.subtotal }}
+    </li>
+{% endfor %}
+</ul>
+
+<p><b>Total Price:</b> {{ order.total_price }}</p>
+
+<a href="{% url 'orders_list' %}">Back</a>
+
+{% endblock content %}

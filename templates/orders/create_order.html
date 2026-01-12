@@ -1,0 +1,33 @@
+
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+
+<h2>Create Order</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <label>Order Name</label><br>
+    <input type="text" name="order_name" required><br><br>
+
+    <h3>Products</h3>
+
+    {% for product in products %}
+        <div style="border:1px solid #ccc; padding:10px; margin:10px;">
+            <b>{{ product.name }}</b><br>
+            Price: {{ product.rate }}<br>
+            Stock: {{ product.stock }}<br>
+
+            Quantity:
+            <input type="number"
+                   name="qty_{{ product.id }}"
+                   min="0"
+                   max="{{ product.stock }}">
+        </div>
+    {% endfor %}
+
+    <button type="submit">Place Order</button>
+</form>
+
+{% endblock content %}

@@ -1,34 +1,40 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Admin Dashboard</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    {% block head %}
+    {% endblock head %}
+
 </head>
+
 <body>
 
-<div class="topbar">
-    Wholesale Staff Management & Order Collection System
-</div>
-
-<div class="container">
-
-    <div class="sidebar">
-        <a href="{% url 'dashboard' %}">Dashboard</a>
-        <a href="{% url 'orders_list' %}">Orders</a>
-        <a href="#">Stores</a>
-        <a href="{% url 'create_order' %}">Products</a>
-        <a href="#">Attendance</a>
-        <a href="{% url 'staff_index' %}">Staff Records</a>
-        <a href="#">Reports</a>
+    <div class="topbar">
+        Wholesale Staff Management & Order Collection System
     </div>
 
-    <div class="content">
-        {% block content %}
-        {% endblock %}
-    </div>
+    <div class="container">
 
-</div>
+        <div class="sidebar">
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <a href="{% url 'orders_list' %}">Orders</a>
+            <a href="#">Stores</a>
+            <a href="{% url 'create_order' %}">Products</a>
+            <a href="#">Attendance</a>
+            <a href="{% url 'staff_index' %}">Staff Records</a>
+            <a href="#">Reports</a>
+        </div>
+
+        <div class="content">
+            {% block content %}
+            {% endblock %}
+        </div>
+
+    </div>
 
 </body>
+
 </html>

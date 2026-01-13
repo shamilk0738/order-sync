@@ -1,33 +1,50 @@
-
 {% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/products.css' %}">
+{% endblock head %}
 
 {% block content %}
+<div class="order-container">
+    <h2>Create Order</h2>
 
-<h2>Create Order</h2>
+    <form method="post">
+        {% csrf_token %}
 
-<form method="post">
-    {% csrf_token %}
-
-    <label>Order Name</label><br>
-    <input type="text" name="order_name" required><br><br>
-
-    <h3>Products</h3>
-
-    {% for product in products %}
-        <div style="border:1px solid #ccc; padding:10px; margin:10px;">
-            <b>{{ product.name }}</b><br>
-            Price: {{ product.rate }}<br>
-            Stock: {{ product.stock }}<br>
-
-            Quantity:
-            <input type="number"
-                   name="qty_{{ product.id }}"
-                   min="0"
-                   max="{{ product.stock }}">
+        <!-- Order Name -->
+        <div class="form-group">
+            <label for="order_name">Order Name</label>
+            <input type="text" id="order_name" name="order_name" placeholder="Enter order name" required>
         </div>
-    {% endfor %}
 
-    <button type="submit">Place Order</button>
-</form>
+        <!-- Products Section -->
+        <h3>Products</h3>
+        <div class="products-list">
+            {% for product in products %}
+            <div class="product-card">
+                {% if product.image %}
+                <div class="product-image">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                </div>
+                {% endif %}
+                <div class="product-details">
+                    <b>{{ product.name }}</b>
+                    <p>Price: {{ product.rate }}</p>
+                    <p>Stock: {{ product.stock }}</p>
 
+                    <div class="quantity-input">
+                        <label for="qty_{{ product.id }}">Quantity:</label>
+                        <input type="number" id="qty_{{ product.id }}" name="qty_{{ product.id }}" min="0"
+                            max="{{ product.stock }}">
+                    </div>
+                </div>
+                <a href="{% url 'product_detail' product.id %}" class="product-card-link">view item</a>
+            </div>
+            {% endfor %}
+        </div>
+
+        <button type="submit">Place Order</button>
+    </form>
+</div>
 {% endblock content %}

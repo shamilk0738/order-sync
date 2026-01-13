@@ -50,10 +50,21 @@ body {
     border-radius: 6px;
 }
 
-.blue { background: #1e88e5; }
-.orange { background: #fb8c00; }
-.green { background: #43a047; }
-.cyan { background: #039be5; }
+.blue {
+    background: #1e88e5;
+}
+
+.orange {
+    background: #fb8c00;
+}
+
+.green {
+    background: #43a047;
+}
+
+.cyan {
+    background: #039be5;
+}
 
 .section {
     background: white;
@@ -66,7 +77,8 @@ table {
     border-collapse: collapse;
 }
 
-th, td {
+th,
+td {
     padding: 10px;
     border-bottom: 1px solid #ddd;
 }

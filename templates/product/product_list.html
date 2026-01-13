@@ -1,39 +1,34 @@
 {% extends 'dashboard/base.html' %}
 {% load static %}
-
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/products.css' %}">
+{% endblock head %}
 {% block content %}
 
+<div class="product-grid">
+    {% for product in products %}
+    <a href="{% url 'product_detail' product.id %}" class="product-card-link">
+        <div class="product-card">
 
+            <div class="image-box">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                {% endif %}
+            </div>
 
-{% for product in products %}
-<div class="product-container">
-    <h2>{{ product.name }}</h2>
+            <div class="product-info">
+                <h3>{{ product.name }}</h3>
 
-    <div class="price-frame">
-        {% if product.image %}
-            <img src="{{ product.image.url }}" alt="{{ product.name }}" width="200">
-        {% endif %}
+                <p class="price">₹{{ product.rate }}</p>
+                <p class="mrp">₹{{ product.mrp }}</p>
+                <p class="stock">Stock: {{ product.stock }}</p>
 
-        <div class="row">
-            <span>Stock</span>
-            <span>{{ product.stock }}</span>
+                <p class="offer">Min. 50% Off</p>
+            </div>
+
         </div>
-
-        <div class="row">
-            <span>MRP</span>
-            <span>₹{{ product.mrp }}</span>
-        </div>
-
-        <div class="row">
-            <span>Rate</span>
-            <span>₹{{ product.rate }}</span>
-        </div>
-
-        <a href="{% url 'product_detail' product.id %}">View</a>
-    </div>
+    </a>
+    {% endfor %}
 </div>
-{% endfor %}
-
-
 
 {% endblock %}

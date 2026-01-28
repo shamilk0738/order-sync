@@ -2,20 +2,145 @@
 
 {% block content %}
 
+<style>
+    .orders-wrapper {
+        background: #fff;
+        padding: 20px;
+        border-radius: 6px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+    }
+
+    .orders-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .orders-header h2 {
+        margin: 0;
+        font-size: 24px;
+    }
+
+    .orders-filter select,
+    .orders-filter button {
+        padding: 6px 10px;
+        font-size: 14px;
+    }
+
+    .orders-filter button {
+        background: #337ab7;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        border-radius: 3px;
+    }
+
+    .orders-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+    .orders-table th {
+        background: #f5f5f5;
+        text-align: left;
+        padding: 10px;
+        border-bottom: 2px solid #ddd;
+        font-size: 14px;
+    }
+
+    .orders-table td {
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+        font-size: 14px;
+    }
+
+    .status-complete {
+        color: #3c763d;
+        background: #dff0d8;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+    }
+
+    .btn-view {
+        background: #337ab7;
+        color: #fff;
+        padding: 6px 12px;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 13px;
+    }
+
+    .btn-view:hover {
+        background: #286090;
+    }
+</style>
+
+<div class="orders-wrapper">
+
+    <div class="orders-header">
+        <h2>Orders</h2>
+
+        <!-- UI only (optional filter look) -->
+        <div class="orders-filter">
+            <select>
+                <option>Status</option>
+                <option>Complete</option>
+                <option>Pending</option>
+            </select>
+            <button>Filter</button>
+        </div>
+    </div>
+
+    <table class="orders-table">
+        <thead>
+            <tr>
+                <th>Order Name</th>
+                <th>User</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ order.order_name }}</td>
+                <td>{{ order.user.username }}</td>
+                <td>₹ {{ order.total_price }}</td>
+                <td>
+                    <span class="status-complete">
+                        {{ order.get_status_display }}
+                    </span>
+                </td>
+                <td>{{ order.created_at|date:"d-m-Y" }}</td>
+                <td>
+                    <a href="{% url 'order_detail' order.id %}" class="btn-view">
+                        View
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
 
 
-<h2>All Orders</h2>
 
-{% for order in orders %}
-<div style="border:1px solid #aaa; margin:10px; padding:10px;">
-    <b>Order:</b> {{ order.order_name }}<br>
-    <b>User:</b> {{ order.user.username }}<br>
-    <b>Status:</b> {{ order.get_status_display }}<br>
-    <b>Date:</b> {{ order.created_at }}<br>
-    <b>Total:</b> {{ order.total_price }}<br>
-    <a href="{% url 'order_detail' order.id %}">View Details</a>
+
+
+
+
+
+
+
+            <tr>
+                <td colspan="6">No orders found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
 </div>
-{% endfor %}
-
 
 {% endblock %}

@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'product',
      'staff.apps.StaffConfig',
      'employees',
-     "orders"
+     "orders", 
    
 
     

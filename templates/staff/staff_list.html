@@ -1,22 +1,23 @@
 {% extends 'dashboard/base.html' %}
 {% load static %}
 
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/staff.css' %}">
+{% endblock head %}
+
 {% block content %}
+<h2>staff</h2>
 
-<h2>All Users</h2>
-
-<div class="user-container">
-
+<div class="staff-container">
     {% for user in users %}
-        <div class="user-card">
-            <h3>{{ user.get_full_name|default:user.username }}</h3>
-            <p><b>Email:</b> {{ user.email }}</p>
-            <p><b>Joined:</b> {{ user.date_joined|date:"Y-m-d" }}</p>
-        </div>
+    <div class="user-card">
+        <h3>{{ user.get_full_name|default:user.username }}</h3>
+        <p><b>Email:</b> {{ user.email }}</p>
+        <p><b>Joined:</b> {{ user.date_joined|date:"Y-m-d" }}</p>
+    </div>
     {% empty %}
-        <p>No users found.</p>
+    <p>No users found.</p>
     {% endfor %}
-
 </div>
 
 {% endblock %}

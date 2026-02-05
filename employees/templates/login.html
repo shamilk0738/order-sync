@@ -1,26 +1,108 @@
-{%load static%}
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login</title>
+    <title>Employee Login</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(135deg, #4e73df, #1cc88a);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-box {
+            background: #ffffff;
+            padding: 30px 35px;
+            width: 350px;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .login-box h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .login-box input:focus {
+            outline: none;
+            border-color: #4e73df;
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 15px;
+            background-color: #4e73df;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .login-box button:hover {
+            background-color: #2e59d9;
+        }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .register-link {
+            display: block;
+            margin-top: 15px;
+            font-size: 14px;
+            text-decoration: none;
+            color: #4e73df;
+        }
+
+        .register-link:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
+
 <body>
 
-<h2>Employee Login</h2>
+<div class="login-box">
+    <h2>Employee Login</h2>
 
-<form method="post">
-    {% csrf_token %}
+    <form method="post">
+        {% csrf_token %}
 
-    <input type="text" name="username" placeholder="Username" required><br><br>
+        <input type="text" name="username" placeholder="Username" required>
 
-    <input type="password" name="password" placeholder="Password" required><br><br>
+        <input type="password" name="password" placeholder="Password" required>
 
-    <button type="submit">Login</button>
-</form>
+        <button type="submit">Login</button>
+    </form>
 
-<p style="color:red;">{{ error }}</p>
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
 
-<a href="{% url 'register' %}">New user? Register</a>
+    <a href="{% url 'register' %}" class="register-link">
+        New user? Register
+    </a>
+</div>
 
 </body>
 </html>

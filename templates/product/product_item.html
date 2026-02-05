@@ -1,36 +1,68 @@
-{% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ product.name }}</title>
-    <link rel="stylesheet" href="{% static 'css/products.css' %}">
-</head>
-<body>
+{% extends 'dashboard/base.html' %}
+{% block title %}{{ product.name }}{% endblock %}
 
-<div class="product-container">
-    <h2>{{ product.name }}</h2>
+{% block content %}
 
-    <div class="price-frame">
+<style>
+.product-detail-wrapper{
+    display:flex;
+    justify-content:center;
+    padding:40px 15px;
+    background:#f4f6f9;
+}
+
+.product-container{
+    width:420px;
+    background:#fff;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 8px 20px rgba(0,0,0,.12);
+    text-align:center;
+}
+
+.detail-img{
+    max-width:100%;
+    border-radius:8px;
+    margin-bottom:15px;
+}
+
+.row{
+    display:flex;
+    justify-content:space-between;
+    padding:8px 0;
+    border-bottom:1px solid #e5e7eb;
+}
+
+.detail-btn{
+    width:100%;
+    margin-top:15px;
+    padding:10px;
+    background:#2563eb;
+    color:#fff;
+    border:none;
+    border-radius:6px;
+}
+
+.back-link{
+    display:inline-block;
+    margin-top:15px;
+    color:#2563eb;
+    text-decoration:none;
+}
+</style>
+
+<div class="product-detail-wrapper">
+    <div class="product-container">
+
+        <h2>{{ product.name }}</h2>
 
         {% if product.image %}
-    <img src="{{ product.image.url }}" alt="{{ product.name }}" width="300">
-{% endif %}
+        <img src="{{ product.image.url }}" class="detail-img">
+        {% endif %}
 
-        
-        <div class="row">
-            <span>Stock</span>
-            <span>{{ product.stock }}</span>
-        </div>
-
-        <div class="row">
-            <span>MRP</span>
-            <span>₹{{ product.mrp }}</span>
-        </div>
-
-        <div class="row">
-            <span>Rate</span>
-            <span>₹{{ product.rate }}</span>
-        </div>
+        <div class="row"><span>Stock</span><span>{{ product.stock }}</span></div>
+        <div class="row"><span>MRP</span><span>₹{{ product.mrp }}</span></div>
+        <div class="row"><span>Rate</span><span>₹{{ product.rate }}</span></div>
 
         <form method="POST">
             {% csrf_token %}
@@ -38,18 +70,20 @@
                 <span>Quantity</span>
                 <input type="number" name="quantity" min="1" max="{{ product.stock }}" required>
             </div>
-
-            <button type="submit">Calculate</button>
+            <button class="detail-btn">Calculate</button>
         </form>
 
         {% if total %}
-            <h3>Total Amount: ₹{{ total }}</h3>
+        <h3>Total: ₹{{ total }}</h3>
         {% endif %}
 
-        <br>
-        <a href="{% url 'product_list' %}">← Back to Products</a>
+        <a href="{% url 'create_order' %}" class="back-link">
+    ← Back to Products
+</a>
+
+        </a>
+
     </div>
 </div>
 
-</body>
-</html>
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends "dashboard/base.html" %}
+
+{% block head %}
+<style>
+    /* Card container */
+    .card {
+        background: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+        width: 100%;
+        overflow: hidden;
+    }
+
+    /* Header */
+    .card-header {
+        padding: 18px 24px;
+        background: #f8f9fb;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .card-header h2 {
+        margin: 0;
+        font-size: 22px;
+        font-weight: 600;
+        color: #1f2937;
+    }
+
+    /* Body */
+    .card-body {
+        padding: 0;
+    }
+
+    /* Store list */
+    .store-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .store-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 24px;
+        border-bottom: 1px solid #f0f0f0;
+        transition: background 0.2s ease;
+    }
+
+    .store-item:last-child {
+        border-bottom: none;
+    }
+
+    .store-item:hover {
+        background: #f9fafb;
+    }
+
+    /* Index number */
+    .store-index {
+        width: 26px;
+        height: 26px;
+        background: #e3f2fd;
+        color: #1565c0;
+        border-radius: 50%;
+        font-size: 13px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    /* Store link */
+    .store-link {
+        text-decoration: none;
+        color: #1565c0;
+        font-size: 15px;
+        font-weight: 500;
+    }
+
+    .store-link:hover {
+        text-decoration: underline;
+    }
+
+    /* Empty state */
+    .no-data {
+        padding: 24px;
+        text-align: center;
+        color: #6b7280;
+        font-size: 14px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <div class="card-header">
+        <h2>Stores</h2>
+    </div>
+
+    <div class="card-body">
+        <ul class="store-list">
+            {% for store in stores %}
+                <li class="store-item">
+                    <div class="store-index">{{ forloop.counter }}</div>
+                    <a class="store-link" href="{% url 'store_detail' store.id %}">
+                        {{ store.store_name }}
+                    </a>
+                </li>
+            {% empty %}
+                <div class="no-data">No stores found.</div>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+{% endblock %}

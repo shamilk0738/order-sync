@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ store.store_name }}</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .store-card {
+            max-width: 900px;
+            margin: 40px auto;
+            background: #ffffff;
+            border-radius: 6px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .store-header {
+            border-bottom: 3px solid #2e7d32;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .store-name {
+            font-size: 26px;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+
+        .store-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            font-size: 14px;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .value {
+            color: #555;
+        }
+
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="store-card">
+    <div class="store-header">
+        <div class="store-name">{{ store.store_name }}</div>
+    </div>
+
+    <div class="store-details">
+        <div>
+            <span class="label">GST No:</span>
+            <span class="value">{{ store.gst_number }}</span>
+        </div>
+
+        <div>
+            <span class="label">State:</span>
+            <span class="value">{{ store.state }}</span>
+        </div>
+
+        <div>
+            <span class="label">Phone:</span>
+            <span class="value">{{ store.phone_number }}</span>
+        </div>
+
+        <div>
+            <span class="label">Alternate No:</span>
+            <span class="value">{{ store.alternate_number }}</span>
+        </div>
+
+        <div>
+            <span class="label">Email:</span>
+            <span class="value">{{ store.email }}</span>
+        </div>
+
+        <div>
+            <span class="label">Address:</span>
+            <span class="value">{{ store.address }}</span>
+        </div>
+    </div>
+
+    <div class="footer">
+        © {{ store.store_name }} | Admin Store
+    </div>
+</div>
+
+</body>
+</html>

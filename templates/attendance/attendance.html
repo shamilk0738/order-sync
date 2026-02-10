@@ -1,0 +1,71 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f7f7f7;
+        padding: 20px;
+    }
+    h1 {
+        text-align: center;
+        color: #333;
+    }
+    table {
+        width: 60%;
+        margin: 20px auto;
+        border-collapse: collapse;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: center;
+    }
+    th {
+        background-color: #4CAF50;
+        color: white;
+    }
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+    input[type="submit"] {
+        display: block;
+        margin: 20px auto;
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        border-radius: 5px;
+    }
+    input[type="submit"]:hover {
+        background-color: #45a049;
+    }
+</style>
+
+<h1>Attendance for {{ today }}</h1>
+
+<form method="POST">
+    {% csrf_token %}
+    <table>
+        <tr>
+            <th>Staff Name</th>
+            <th>Present</th>
+        </tr>
+        {% for staff in staffs %}
+        <tr>
+            <td>{{ staff.name }}</td>
+            <td>
+                <input type="checkbox" name="staff_{{ staff.id }}"
+                {% if attendance_dict.staff.id %}checked{% endif %}>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <input type="submit" value="Submit Attendance">
+</form>
+
+{% endblock content %}

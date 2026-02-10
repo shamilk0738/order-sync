@@ -1,23 +1,80 @@
-{% extends 'dashboard/base.html' %}
+{% extends "dashboard/base.html" %}
 {% load static %}
 
 {% block head %}
-<link rel="stylesheet" href="{% static 'css/staff.css' %}">
+<style>
+.staff-wrapper{
+    width:100%;
+    padding:30px;
+}
+
+.staff-wrapper h2{
+    text-align:center;
+    color:#0d47a1;
+}
+
+.staff-grid{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap:30px;
+    max-width: 1000px;   /* center look */
+    margin: 30px auto;  /* center grid */
+}
+.card p{
+    width: 100%;
+    text-align: center;
+}
+
+.staff-card{
+    background:white;
+    padding:20px;
+    border-radius:14px;
+    text-align:center;
+    box-shadow:0 5px 15px rgba(0,0,0,.12);
+}
+
+.staff-card img{
+    width:110px;
+    height:110px;
+    border-radius:50%;
+    object-fit:cover;
+    margin-bottom:10px;
+}
+
+.staff-card h3{
+    margin:10px 0 5px;
+}
+
+.staff-card p{
+    color:#555;
+    margin:3px 0;
+}
+</style>
 {% endblock head %}
 
 {% block content %}
-<h2>staff</h2>
 
-<div class="staff-container">
-    {% for user in users %}
-    <div class="user-card">
-        <h3>{{ user.get_full_name|default:user.username }}</h3>
-        <p><b>Email:</b> {{ user.email }}</p>
-        <p><b>Joined:</b> {{ user.date_joined|date:"Y-m-d" }}</p>
+<div class="staff-wrapper">
+    <h2>Staff Records</h2>
+
+    <div class="staff-grid">
+        {% for s in staffs %}
+        <div class="staff-card">
+
+            {% if s.photo %}
+                <img src="{{ s.photo.url }}">
+            {% else %}
+                <img src="{% static 'images/default.png' %}">
+            {% endif %}
+
+            <h3>{{ s.name }}</h3>
+            <p>{{ s.position }}</p>
+            <p>{{ s.phone }}</p>
+            <p>{{ s.route }}</p>
+
+        </div>
+        {% endfor %}
     </div>
-    {% empty %}
-    <p>No users found.</p>
-    {% endfor %}
 </div>
 
 {% endblock %}

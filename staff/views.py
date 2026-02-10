@@ -1,7 +1,16 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Staff
-from django.contrib.auth.models import User
-def user_list(request):
-    users = User.objects.all()
-    return render(request, 'staff/staff_list.html', {'users': users})
 
+def staff_index(request):   # 👈 പേര് മാറ്റി
+    if request.method == "POST":
+        Staff.objects.create(
+            name=request.POST['name'],
+            position=request.POST['position'],
+            phone=request.POST['phone'],
+            route=request.POST['route'],
+            photo=request.FILES.get('photo')  # safer
+        )
+        return redirect('staff_index')
+
+    staffs = Staff.objects.all()
+    return render(request, 'staff/staff_list.html', {'staffs': staffs})

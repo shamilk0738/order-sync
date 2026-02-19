@@ -1,0 +1,203 @@
+{% extends "dashboard/base.html" %}
+
+{% block head %}
+<style>
+:root {
+    --primary: #2563eb;
+    --primary-light: #e0e7ff;
+    --text-dark: #1f2937;
+    --text-muted: #6b7280;
+    --border: #e5e7eb;
+    --bg-light: #f9fafb;
+}
+
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.page-header h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.back-link {
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.back-link:hover { text-decoration: underline; }
+
+/* Date group block */
+.date-group {
+    margin-bottom: 24px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.07);
+    overflow: hidden;
+    animation: fadeIn 0.3s ease;
+}
+
+.date-label {
+    background: linear-gradient(135deg, #eef2ff, #f0fdf4);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--primary);
+    border-bottom: 1px solid var(--border);
+    letter-spacing: 0.3px;
+}
+
+/* Orders table inside each date */
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.orders-table th {
+    background: #f8fafc;
+    padding: 10px 16px;
+    text-align: left;
+    font-size: 13px;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+}
+
+.orders-table td {
+    padding: 12px 16px;
+    font-size: 14px;
+    color: var(--text-dark);
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.orders-table tr:last-child td { border-bottom: none; }
+
+.orders-table tr:hover td { background: var(--bg-light); }
+
+/* Status badge */
+.badge {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.badge-pending   { background: #fef3c7; color: #d97706; }
+.badge-complete  { background: #d1fae5; color: #059669; }
+.badge-cancelled { background: #fee2e2; color: #dc2626; }
+
+/* View button */
+.btn-view {
+    background: var(--primary);
+    color: #fff;
+    padding: 5px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.btn-view:hover { background: #1d4ed8; }
+
+/* Empty state */
+.empty-box {
+    text-align: center;
+    padding: 48px;
+    color: var(--text-muted);
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.07);
+}
+
+.empty-box p { font-size: 15px; margin-bottom: 16px; }
+
+.btn-new-order {
+    background: var(--primary);
+    color: #fff;
+    padding: 10px 22px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <a class="back-link" href="{% url 'store_front' %}">← Back to Stores</a>
+        <h2>{{ store.store_name }} — Orders</h2>
+    </div>
+    <a href="{% url 'create_order' %}?store_id={{ store.id }}" class="btn-new-order">
+        + New Order
+    </a>
+</div>
+
+{% if grouped %}
+    {% for date, orders in grouped.items %}
+    <div class="date-group">
+
+        <!-- Date heading -->
+        <div class="date-label">📅 {{ date|date:"d F Y" }}  &nbsp;·&nbsp; {{ orders|length }} order{{ orders|length|pluralize }}</div>
+
+        <table class="orders-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Order Name</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Time</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ order.order_name }}</td>
+                    <td>₹ {{ order.total_price }}</td>
+                    <td>
+                        <span class="badge badge-{{ order.status }}">
+                            {{ order.get_status_display }}
+                        </span>
+                    </td>
+                    <td>{{ order.created_at|date:"h:i A" }}</td>
+                    <td>
+                        <!-- Click → see full estimate bill -->
+                        <a href="{% url 'order_detail' order.id %}" class="btn-view">
+                            View Estimate
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endfor %}
+
+{% else %}
+    <div class="empty-box">
+        <p>No orders found for <b>{{ store.store_name }}</b> yet.</p>
+        <a href="{% url 'create_order' %}?store_id={{ store.id }}" class="btn-new-order">
+            + Create First Order
+        </a>
+    </div>
+{% endif %}
+
+{% endblock %}

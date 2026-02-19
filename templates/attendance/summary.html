@@ -1,0 +1,109 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+
+<style>
+    .card {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        max-width: 900px;
+        margin: auto;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    /* Center everything */
+th, td {
+    text-align: center;
+}
+
+/* Name column left aligned */
+th:nth-child(2),
+td:nth-child(2) {
+    text-align: left;
+}
+
+/* Equal column width */
+table {
+    table-layout: fixed;
+}
+
+/* Zebra row effect (alternate row color) */
+tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+/* Hover effect */
+tr:hover {
+    background-color: #eef2f7;
+    transition: 0.2s;
+}
+    .sl-no {
+    color: #060606;   /* Blue */
+    font-weight: bold;
+    }
+    .total-col {
+    color: #8e44ad;   /* Purple */
+    font-weight: bold;
+}
+
+    .today-col {
+    color: #d35400;   /* Orange */
+    font-weight: bold;
+    }
+
+    th {
+        background: #2c3e50;
+        color: white;
+        padding: 12px;
+    }
+    .name-text {
+    color: #1e1d1d;   /* Red color */
+    font-weight: bold;
+    }
+
+    td {
+        padding: 12px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .present { color: green; font-weight: bold; }
+    .absent { color: red; font-weight: bold; }
+</style>
+
+<div class="card">
+    <h2>Attendance Summary</h2>
+    <p>Date: {{ today }}</p>
+
+    <table>
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Present</th>
+            <th>Absent</th>
+            <th>Total Attendance</th>
+            <th>Today</th>
+        </tr>
+
+        {% for s in summary %}
+        <tr>
+            <td class="sl-no">{{ forloop.counter }}</td>
+            <td class="name-text">{{ s.staff.name|upper }}</td>
+            <td class="present">{{ s.present }}</td>
+            <td class="absent">{{ s.absent }}</td>
+            <td class="total-col">{{ s.total }}</td>
+            <td class="today-col">{{ s.today|upper }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">No Staff Found</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+{% endblock %}

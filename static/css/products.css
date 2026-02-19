@@ -14,6 +14,17 @@ body {
     margin: auto;
     padding: 20px;
 }
+.store-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.store-header h2 {
+    color: #1e3a8a;
+    font-size: 26px;
+    font-weight: 600;
+}
+
 
 /* Headings */
 h2,

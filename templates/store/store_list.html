@@ -2,116 +2,162 @@
 
 {% block head %}
 <style>
-    /* Card container */
-    .card {
-        background: #ffffff;
-        border-radius: 10px;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-        width: 100%;
-        overflow: hidden;
-    }
+:root {
+    --primary: #2563eb;
+    --primary-light: #e0e7ff;
+    --text-dark: #1f2937;
+    --text-muted: #6b7280;
+    --border: #e5e7eb;
+    --bg-light: #f9fafb;
+}
 
-    /* Header */
-    .card-header {
-        padding: 18px 24px;
-        background: #f8f9fb;
-        border-bottom: 1px solid #e5e7eb;
-    }
+.card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    width: 100%;
+    overflow: hidden;
+    animation: fadeIn 0.4s ease-in-out;
+}
 
-    .card-header h2 {
-        margin: 0;
-        font-size: 22px;
-        font-weight: 600;
-        color: #1f2937;
-    }
+.card-header {
+    padding: 20px 26px;
+    background: linear-gradient(135deg, #f8fafc, #eef2ff);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-    /* Body */
-    .card-body {
-        padding: 0;
-    }
+.card-header h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-dark);
+}
 
-    /* Store list */
-    .store-list {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-    }
+.btn-new-order {
+    background: var(--primary);
+    color: #fff;
+    padding: 8px 18px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+}
 
-    .store-item {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        padding: 14px 24px;
-        border-bottom: 1px solid #f0f0f0;
-        transition: background 0.2s ease;
-    }
+.btn-new-order:hover {
+    background: #1d4ed8;
+}
 
-    .store-item:last-child {
-        border-bottom: none;
-    }
+.store-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
 
-    .store-item:hover {
-        background: #f9fafb;
-    }
+.store-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 26px;
+    border-bottom: 1px solid var(--border);
+    transition: all 0.25s ease;
+}
 
-    /* Index number */
-    .store-index {
-        width: 26px;
-        height: 26px;
-        background: #e3f2fd;
-        color: #1565c0;
-        border-radius: 50%;
-        font-size: 13px;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
+.store-item:last-child { border-bottom: none; }
+.store-item:hover { background: var(--bg-light); }
 
-    /* Store link */
-    .store-link {
-        text-decoration: none;
-        color: #1565c0;
-        font-size: 15px;
-        font-weight: 500;
-    }
+.store-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
 
-    .store-link:hover {
-        text-decoration: underline;
-    }
+.store-index {
+    width: 30px;
+    height: 30px;
+    background: var(--primary-light);
+    color: var(--primary);
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
 
-    /* Empty state */
-    .no-data {
-        padding: 24px;
-        text-align: center;
-        color: #6b7280;
-        font-size: 14px;
-    }
+/* Click store name → see orders by date */
+.store-link {
+    text-decoration: none;
+    color: var(--text-dark);
+    font-size: 16px;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.store-link:hover { color: var(--primary); }
+
+.btn-order-now {
+    background: #ecfdf5;
+    color: #059669;
+    border: 1px solid #6ee7b7;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    text-decoration: none;
+    white-space: nowrap;
+    font-weight: 500;
+}
+
+.btn-order-now:hover {
+    background: #d1fae5;
+}
+
+.no-data {
+    padding: 32px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 15px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
 </style>
 {% endblock %}
 
 {% block content %}
-
 <div class="card">
     <div class="card-header">
         <h2>Stores</h2>
+        <a href="{% url 'create_order' %}" class="btn-new-order">+ New Order</a>
     </div>
 
     <div class="card-body">
         <ul class="store-list">
             {% for store in stores %}
-                <li class="store-item">
+            <li class="store-item">
+                <div class="store-left">
                     <div class="store-index">{{ forloop.counter }}</div>
-                    <a class="store-link" href="{% url 'store_detail' store.id %}">
+                    <!-- Click store name → orders grouped by date -->
+                    <a class="store-link" href="{% url 'store_orders' store.id %}">
                         {{ store.store_name }}
                     </a>
-                </li>
+                </div>
+                <!-- Quick shortcut: create order for this store directly -->
+                <a class="btn-order-now"
+                   href="{% url 'create_order' %}?store_id={{ store.id }}">
+                    + Order
+                </a>
+            </li>
             {% empty %}
-                <div class="no-data">No stores found.</div>
+            <div class="no-data">No stores found.</div>
             {% endfor %}
         </ul>
     </div>
 </div>
-
 {% endblock %}

@@ -21,19 +21,19 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    # LOGIN / REGISTER FIRST
+    path('', include('employees.urls')),
+
+    # other apps
+    path('dashboard/', include('dashboard.urls')),
     path('staff/', include('staff.urls')),
-    path('', include('dashboard.urls')),
     path('product/', include('product.urls')),
-    path('employees/', include('employees.urls')),
-    path("orders/", include("orders.urls")),
-    path('', include('store.urls')),
-    path('', include('attendance.urls')),
-    
-
-
-     
-     
-
+    path('orders/', include('orders.urls')),
+    path('store/', include('store.urls')),
+     path('attendance/', include('attendance.urls')), 
+     path('reports/', include('reports.urls')),
 ]
+
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

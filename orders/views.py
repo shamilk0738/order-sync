@@ -1,55 +1,70 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Order, OrderItem
+from store.models import AdminStore
 from product.models import Product
 
+
+# ─────────────────────────────────────────────
+# 1. CREATE ORDER PAGE
+#    GET  → show stores dropdown + products
+#    POST → save order
+# ─────────────────────────────────────────────
 @login_required
 def create_order(request):
-    products = Product.objects.all()
+    stores   = AdminStore.objects.all()
+    store_id = request.GET.get('store_id') or request.POST.get('store')
+    store    = None
+    products = []
 
-    if request.method == "POST":
-        order_name = request.POST.get("order_name")
+    if store_id:
+        store    = get_object_or_404(AdminStore, id=store_id)
+        products = Product.objects.filter(stock__gt=0)
 
-        order = Order.objects.create(
-            user=request.user,
-            order_name=order_name
-        )
+    if request.method == 'POST' and store:
+        # Collect items that have quantity > 0
+        items_to_save = []
+        for product in Product.objects.filter(stock__gt=0):
+            qty = request.POST.get(f'qty_{product.id}', 0)
+            try:
+                qty = int(qty)
+            except ValueError:
+                qty = 0
+            if qty > 0:
+                items_to_save.append((product, qty))
 
-        for product in products:
-            qty = request.POST.get(f"qty_{product.id}")
+        if items_to_save:
+            order = Order.objects.create(
+                user=request.user,
+                store=store,
+                order_name=f"Order - {store.store_name}",
+                status='pending',
+            )
+            for product, qty in items_to_save:
+                OrderItem.objects.create(order=order, product=product, quantity=qty)
+            order.recalculate_total()
+            return redirect('order_detail', order.id)
 
-            if qty and int(qty) > 0:
-                # Optional: stock check
-                if int(qty) <= product.stock:
-                    OrderItem.objects.create(
-                        order=order,
-                        product=product,
-                        quantity=int(qty)
-                    )
-
-                    # Reduce stock (optional)
-                    product.stock -= int(qty)
-                    product.save()
-
-        return redirect("orders_list")
-
-    return render(request, "orders/create_order.html", {
-        "products": products
+    return render(request, 'orders/create_order.html', {
+        'stores':   stores,
+        'store':    store,
+        'products': products,
     })
 
 
+# ─────────────────────────────────────────────
+# 2. ALL ORDERS LIST
+# ─────────────────────────────────────────────
+@login_required
 def orders_list(request):
-    orders = Order.objects.select_related("user").prefetch_related("items__product")
-    return render(request, "orders/orders_list.html", {
-        "orders": orders
-    })
+    orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    return render(request, 'orders/orders_list.html', {'orders': orders})
 
 
-def order_detail(request, order_id):
-    order = get_object_or_404(
-        Order.objects.select_related("user").prefetch_related("items__product"),
-        id=order_id
-    )
-    return render(request, "orders/order_detail.html", {
-        "order": order
-    })
+# ─────────────────────────────────────────────
+# 3. SINGLE ORDER DETAIL / ESTIMATE
+# ─────────────────────────────────────────────
+@login_required
+def order_detail(request, id):
+    order = get_object_or_404(Order, id=id, user=request.user)
+    return render(request, 'orders/order_detail.html', {'order': order})

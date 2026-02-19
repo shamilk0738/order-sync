@@ -1,53 +1,514 @@
 {% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --blue:    #1a6fdb;
+    --blue-l:  #e8f0fe;
+    --orange:  #f97316;
+    --orange-l:#fff3e8;
+    --green:   #16a34a;
+    --green-l: #dcfce7;
+    --cyan:    #0891b2;
+    --cyan-l:  #e0f7fa;
+    --text:    #1e293b;
+    --muted:   #64748b;
+    --border:  #e2e8f0;
+    --bg:      #f1f5f9;
+    --surface: #ffffff;
+    --font:    'Plus Jakarta Sans', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font); }
+
+/* ── Page layout ── */
+.db-page {
+    padding: 24px 28px;
+    background: var(--bg);
+    min-height: 100vh;
+}
+
+/* ── Page header ── */
+.db-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.db-header h2 {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.4px;
+}
+
+.db-welcome {
+    font-size: 13px;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.db-welcome b { color: var(--text); }
+
+/* ── Summary cards ── */
+.db-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+@media (max-width: 900px) { .db-cards { grid-template-columns: repeat(2, 1fr); } }
+
+.db-card {
+    border-radius: 14px;
+    padding: 22px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    animation: fadeUp 0.4s ease both;
+    position: relative;
+    overflow: hidden;
+}
+
+.db-card::after {
+    content: '';
+    position: absolute;
+    right: -10px; bottom: -10px;
+    width: 70px; height: 70px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+}
+
+.db-card.blue   { background: linear-gradient(135deg,#1a6fdb,#3b8ef3); }
+.db-card.orange { background: linear-gradient(135deg,#f97316,#fb923c); }
+.db-card.green  { background: linear-gradient(135deg,#16a34a,#22c55e); }
+.db-card.cyan   { background: linear-gradient(135deg,#0891b2,#22d3ee); }
+
+.db-card:nth-child(1){animation-delay:.05s}
+.db-card:nth-child(2){animation-delay:.10s}
+.db-card:nth-child(3){animation-delay:.15s}
+.db-card:nth-child(4){animation-delay:.20s}
+
+.card-icon-wrap {
+    width: 50px; height: 50px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.22);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.card-text {}
+.card-val  { font-size: 32px; font-weight: 800; color: #fff; line-height: 1; }
+.card-lbl  { font-size: 13px; color: rgba(255,255,255,0.85); margin-top: 4px; font-weight: 500; }
+
+/* ── Main grid ── */
+.db-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 1100px) { .db-grid { grid-template-columns: 1fr; } }
+
+/* ── Section boxes ── */
+.db-box {
+    background: var(--surface);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    animation: fadeUp 0.4s ease both;
+    animation-delay: 0.25s;
+}
+
+.db-box-head {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.db-box-head h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.view-all {
+    font-size: 12px;
+    color: var(--blue);
+    text-decoration: none;
+    font-weight: 600;
+    background: var(--blue-l);
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+.view-all:hover { background: #d0e4ff; }
+
+/* ── Orders table ── */
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.orders-table th {
+    background: #f8fafc;
+    padding: 10px 16px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+}
+
+.orders-table td {
+    padding: 13px 16px;
+    font-size: 13px;
+    color: var(--text);
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.orders-table tr:last-child td { border-bottom: none; }
+.orders-table tr:hover td { background: #fafbff; }
+
+.badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.badge-pending   { background: #fff3e8; color: #f97316; }
+.badge-complete  { background: #dcfce7; color: #16a34a; }
+.badge-cancelled { background: #fee2e2; color: #dc2626; }
+
+/* ── Attendance card ── */
+.attendance-body {
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.donut-wrap { text-align: center; }
+.donut-label { font-size: 12px; color: var(--muted); margin-top: 8px; font-weight: 600; }
+
+/* SVG donut chart */
+.donut-svg { transform: rotate(-90deg); }
+.donut-bg  { fill: none; stroke: #f1f5f9; stroke-width: 8; }
+.donut-fill-green  { fill: none; stroke: #16a34a; stroke-width: 8; stroke-linecap: round; transition: stroke-dasharray .8s ease; }
+.donut-fill-orange { fill: none; stroke: #f97316; stroke-width: 8; stroke-linecap: round; }
+.donut-text-wrap { position: relative; display: inline-block; }
+.donut-center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none;
+}
+.donut-center .num  { font-size: 20px; font-weight: 800; color: var(--text); line-height: 1; }
+.donut-center .sub  { font-size: 10px; color: var(--muted); font-weight: 600; }
+
+/* ── Bottom grid ── */
+.db-grid2 {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 20px;
+}
+
+@media (max-width: 1100px) { .db-grid2 { grid-template-columns: 1fr; } }
+
+/* ── Bar chart area ── */
+.chart-body { padding: 20px; }
+.chart-wrap { height: 180px; position: relative; }
+
+/* ── Top products ── */
+.products-body { padding: 16px 20px; display: flex; flex-direction: column; gap: 14px; }
+
+.prod-row { display: flex; align-items: center; gap: 12px; }
+
+.prod-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--blue);
+    flex-shrink: 0;
+}
+
+.prod-name { font-size: 13px; font-weight: 600; color: var(--text); min-width: 110px; }
+
+.prod-bar-bg {
+    flex: 1;
+    height: 8px;
+    background: var(--bg);
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.prod-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--blue), #60a5fa);
+    border-radius: 99px;
+    transition: width 0.8s ease;
+}
+
+.prod-qty {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 600;
+    min-width: 30px;
+    text-align: right;
+}
+
+/* Animations */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+{% endblock %}
 
 {% block content %}
+<div class="db-page">
 
-<h2>Admin Dashboard</h2>
-
-<div class="cards">
-    <div class="card blue">
-        <h3>Total Orders</h3>
-        <p>125</p>
+    <!-- Header -->
+    <div class="db-header">
+        <h2>Admin Dashboard</h2>
+        <div class="db-welcome">
+            👋 Welcome, <b>{{ request.user.get_full_name|default:request.user.username }}</b>
+        </div>
     </div>
 
-    <div class="card orange">
-        <h3>Pending Orders</h3>
-        <p>18</p>
+    <!-- Summary cards -->
+    <div class="db-cards">
+        <div class="db-card blue">
+            <div class="card-icon-wrap">🛒</div>
+            <div class="card-text">
+                <div class="card-val">{{ total_orders }}</div>
+                <div class="card-lbl">Total Orders</div>
+            </div>
+        </div>
+        <div class="db-card orange">
+            <div class="card-icon-wrap">⏳</div>
+            <div class="card-text">
+                <div class="card-val">{{ pending_orders }}</div>
+                <div class="card-lbl">Pending Orders</div>
+            </div>
+        </div>
+        <div class="db-card green">
+            <div class="card-icon-wrap">👥</div>
+            <div class="card-text">
+                <div class="card-val">{{ staff_members }}</div>
+                <div class="card-lbl">Staff Members</div>
+            </div>
+        </div>
+        <div class="db-card cyan">
+            <div class="card-icon-wrap">🏪</div>
+            <div class="card-text">
+                <div class="card-val">{{ stores_visited }}</div>
+                <div class="card-lbl">Stores Visited Today</div>
+            </div>
+        </div>
     </div>
 
-    <div class="card green">
-        <h3>Staff Members</h3>
-        <p>24</p>
+    <!-- Main grid: Latest Orders + Attendance -->
+    <div class="db-grid">
+
+        <!-- Latest Orders -->
+        <div class="db-box">
+            <div class="db-box-head">
+                <h3>📋 Latest Orders</h3>
+                <a href="{% url 'orders_list' %}" class="view-all">View All →</a>
+            </div>
+            <table class="orders-table">
+                <thead>
+                    <tr>
+                        <th>Shop</th>
+                        <th>Product</th>
+                        <th>Qty</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in latest_orders %}
+                    <tr>
+                        <td><b>{{ order.store.store_name|default:"—" }}</b></td>
+                        <td>
+                            {% for item in order.items.all|slice:":1" %}
+                                {{ item.product.name }}
+                                {% if order.items.count > 1 %}
+                                    <span style="color:var(--muted);font-size:11px;">+{{ order.items.count|add:"-1" }} more</span>
+                                {% endif %}
+                            {% empty %}—
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% for item in order.items.all|slice:":1" %}
+                                {{ item.quantity }}
+                            {% empty %}—
+                            {% endfor %}
+                        </td>
+                        <td>
+                            <span class="badge badge-{{ order.status }}">
+                                {{ order.get_status_display }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" style="text-align:center;padding:24px;color:var(--muted);">No orders yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Attendance Overview -->
+        <div class="db-box">
+            <div class="db-box-head">
+                <h3>📅 Attendance Overview</h3>
+            </div>
+            <div class="attendance-body">
+
+                <!-- Today donut -->
+                <div class="donut-wrap">
+                    <div class="donut-text-wrap">
+                        <svg class="donut-svg" width="100" height="100" viewBox="0 0 100 100">
+                            <circle class="donut-bg"    cx="50" cy="50" r="38"/>
+                            <circle class="donut-fill-green" cx="50" cy="50" r="38"
+                                stroke-dasharray="{{ today_present|default:0 }} 239"
+                                stroke-dashoffset="0"/>
+                        </svg>
+                        <div class="donut-center">
+                            <div class="num">{{ today_present }}</div>
+                            <div class="sub">Present</div>
+                        </div>
+                    </div>
+                    <div class="donut-label">Today's Attendance</div>
+                </div>
+
+                <!-- Monthly donut -->
+                <div class="donut-wrap">
+                    <div class="donut-text-wrap">
+                        <svg class="donut-svg" width="100" height="100" viewBox="0 0 100 100">
+                            <circle class="donut-bg"    cx="50" cy="50" r="38"/>
+                            <circle class="donut-fill-green" cx="50" cy="50" r="38"
+                                stroke-dasharray="{% widthratio monthly_pct 100 239 %} 239"
+                                stroke-dashoffset="0"/>
+                            <!-- Red remainder -->
+                            <circle class="donut-fill-orange" cx="50" cy="50" r="38"
+                                stroke-dasharray="{% widthratio monthly_pct 100 239 as g %}{{ 239|add:"-g"|default:0 }} 239"
+                                stroke-dashoffset="-{% widthratio monthly_pct 100 239 %}"/>
+                        </svg>
+                        <div class="donut-center">
+                            <div class="num">{{ monthly_pct }}%</div>
+                            <div class="sub">Present</div>
+                        </div>
+                    </div>
+                    <div class="donut-label">Monthly Stats</div>
+                </div>
+
+            </div>
+        </div>
     </div>
 
-    <div class="card cyan">
-        <h3>Stores Visited</h3>
-        <p>15</p>
+    <!-- Bottom grid: Visit Activity + Top Products -->
+    <div class="db-grid2">
+
+        <!-- Visit Activity bar chart -->
+        <div class="db-box">
+            <div class="db-box-head">
+                <h3>📊 Visit Activity</h3>
+                <span style="font-size:12px;color:var(--muted);">Visits This Week</span>
+            </div>
+            <div class="chart-body">
+                <div class="chart-wrap">
+                    <canvas id="visitChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Products -->
+        <div class="db-box">
+            <div class="db-box-head">
+                <h3>📦 Top Products</h3>
+                <a href="{% url 'product_report' %}" class="view-all">Full Report →</a>
+            </div>
+            <div class="products-body">
+                {% for p in top_products %}
+                <div class="prod-row">
+                    <div class="prod-dot" style="background:{% cycle '#1a6fdb' '#f97316' '#16a34a' '#0891b2' %};"></div>
+                    <div class="prod-name">{{ p.product__name|truncatechars:18 }}</div>
+                    <div class="prod-bar-bg">
+                        <div class="prod-bar-fill"
+                             style="width:{% widthratio p.total_qty max_qty 100 %}%;
+                                    background:linear-gradient(90deg,{% cycle '#1a6fdb' '#f97316' '#16a34a' '#0891b2' %},{% cycle '#60a5fa' '#fb923c' '#4ade80' '#22d3ee' %});">
+                        </div>
+                    </div>
+                    <div class="prod-qty">{{ p.total_qty }}</div>
+                </div>
+                {% empty %}
+                <p style="color:var(--muted);font-size:13px;text-align:center;padding:20px;">No product data yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+
     </div>
+
 </div>
 
-<div class="section">
-    <h3>Latest Orders</h3>
-    <table>
-        <tr>
-            <th>Shop</th>
-            <th>Product</th>
-            <th>Qty</th>
-            <th>Status</th>
-        </tr>
-        <tr>
-            <td>Patel Traders</td>
-            <td>Rice Bags</td>
-            <td>50</td>
-            <td class="pending">Pending</td>
-        </tr>
-        <tr>
-            <td>City Mart</td>
-            <td>Soft Drinks</td>
-            <td>30</td>
-            <td class="completed">Completed</td>
-        </tr>
-    </table>
-</div>
+<!-- Chart JS -->
+<script>
+const visitDays   = {{ visit_days|safe }};
+const visitCounts = {{ visit_counts|safe }};
 
+new Chart(document.getElementById('visitChart'), {
+    type: 'bar',
+    data: {
+        labels: visitDays,
+        datasets: [{
+            label: 'Orders',
+            data: visitCounts,
+            backgroundColor: 'rgba(26,111,219,0.18)',
+            borderColor:     'rgba(26,111,219,0.9)',
+            borderWidth: 2,
+            borderRadius: 8,
+            borderSkipped: false,
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: { stepSize: 1, color: '#94a3b8', font: { size: 11 } },
+                grid: { color: '#f1f5f9' }
+            },
+            x: {
+                ticks: { color: '#94a3b8', font: { size: 12 } },
+                grid: { display: false }
+            }
+        }
+    }
+});
+</script>
 {% endblock %}

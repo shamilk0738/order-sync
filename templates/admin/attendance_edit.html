@@ -1,0 +1,72 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<style>
+    .edit-card {
+        background: #1e1e1e;
+        padding: 30px;
+        border-radius: 10px;
+        max-width: 450px;
+        color: #ddd;
+    }
+    .edit-card h3 { color: #f0c040; margin-bottom: 20px; }
+    .info-row { margin-bottom: 12px; font-size: 15px; }
+    .info-label { color: #aaa; }
+    .info-value { color: #fff; font-weight: bold; }
+    .radio-group { margin: 20px 0; display: flex; gap: 30px; }
+    .radio-group label { color: #ddd; font-size: 15px; cursor: pointer; }
+    .btn-save {
+        background: #28a745; color: white;
+        padding: 10px 22px; border: none;
+        border-radius: 5px; font-weight: bold;
+        cursor: pointer; font-size: 15px;
+    }
+    .btn-save:hover { background: #218838; }
+    .btn-back {
+        background: #6c757d; color: white;
+        padding: 10px 22px; border: none;
+        border-radius: 5px; font-weight: bold;
+        cursor: pointer; font-size: 15px;
+        margin-left: 10px; text-decoration: none;
+    }
+    .btn-back:hover { background: #5a6268; color: white; }
+</style>
+
+<div class="edit-card">
+    <h3>✏️ Edit Attendance</h3>
+
+    <div class="info-row">
+        <span class="info-label">Staff: </span>
+        <span class="info-value">{{ record.staff.name|upper }}</span>
+    </div>
+    <div class="info-row">
+        <span class="info-label">Date: </span>
+        <span class="info-value">{{ record.date }}</span>
+    </div>
+    <div class="info-row">
+        <span class="info-label">Current Status: </span>
+        <span class="info-value" style="color: {% if record.status == 'present' %}#28a745{% else %}#dc3545{% endif %}">
+            {{ record.status|upper }}
+        </span>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="radio-group">
+            <label>
+                <input type="radio" name="status" value="present"
+                    {% if record.status == 'present' %}checked{% endif %}>
+                ✅ Present
+            </label>
+            <label>
+                <input type="radio" name="status" value="absent"
+                    {% if record.status == 'absent' %}checked{% endif %}>
+                ❌ Absent
+            </label>
+        </div>
+        <button type="submit" class="btn-save">Save Changes</button>
+        <a href="{% url 'admin:attendance_attendance_history' %}" class="btn-back">Back</a>
+    </form>
+</div>
+
+{% endblock %}

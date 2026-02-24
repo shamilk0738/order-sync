@@ -1,12 +1,8 @@
 {% extends "admin/base_site.html" %}
 
 {% block content %}
-
 <style>
-    h2 {
-        margin-bottom: 20px;
-    }
-
+    h2 { margin-bottom: 20px; }
     table {
         width: 60%;
         border-collapse: collapse;
@@ -14,61 +10,27 @@
         border-radius: 10px;
         overflow: hidden;
     }
-
-    th, td {
-        padding: 12px;
-        text-align: left;
-    }
-
-    th {
-        background: #2c2c2c;
-        color: #ffffff;
-    }
-
-    tr:nth-child(even) {
-        background: #252525;
-    }
-
-    tr:hover {
-        background: #333333;
-    }
-
+    th, td { padding: 12px; text-align: left; }
+    th { background: #2c2c2c; color: #ffffff; }
+    tr:nth-child(even) { background: #252525; }
+    tr:hover { background: #333333; }
+    td { color: #ddd; }
     .btn-save {
-        background-color: #28a745;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        font-weight: bold;
-        cursor: pointer;
+        background-color: #28a745; color: white;
+        padding: 10px 20px; border: none;
+        border-radius: 5px; font-weight: bold; cursor: pointer;
     }
-
-    .btn-save:hover {
-        background-color: #218838;
-    }
-
+    .btn-save:hover { background-color: #218838; }
     .btn-cancel {
-        background-color: #dc3545;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        font-weight: bold;
-        cursor: pointer;
-        margin-left: 10px;
+        background-color: #dc3545; color: white;
+        padding: 10px 20px; border: none;
+        border-radius: 5px; font-weight: bold;
+        cursor: pointer; margin-left: 10px;
     }
-
-    .btn-cancel:hover {
-        background-color: #c82333;
-    }
-
     .message {
-        background: #28a745;
-        color: white;
-        padding: 10px;
-        margin-bottom: 15px;
-        border-radius: 5px;
-        width: 60%;
+        background: #28a745; color: white;
+        padding: 10px; margin-bottom: 15px;
+        border-radius: 5px; width: 60%;
     }
 </style>
 
@@ -76,31 +38,42 @@
 
 {% if messages %}
     {% for message in messages %}
-        <div class="message">
-            {{ message }}
-        </div>
+        <div class="message">{{ message }}</div>
     {% endfor %}
 {% endif %}
 
 <form method="POST">
     {% csrf_token %}
-     <label><strong>Select Date:</strong></label>
-    <input type="date" name="attendance_date" 
+    <label><strong>Select Date:</strong></label>
+    <input type="date" name="attendance_date"
            value="{{ today|date:'Y-m-d' }}" required>
-
     <br><br>
+
     <table>
         <tr>
             <th>Name</th>
             <th>Status</th>
         </tr>
-
         {% for staff in staff_list %}
         <tr>
             <td>{{ staff.name }}</td>
             <td>
-                <input type="radio" name="staff_{{ staff.id }}" value="present"> Present
-                <input type="radio" name="staff_{{ staff.id }}" value="absent"> Absent
+                <input type="radio" name="staff_{{ staff.id }}" value="present"
+                    {% if existing|default:'' %}
+                        {% if existing|default_if_none:'' %}
+                            {% for k, v in existing.items %}
+                                {% if k == staff.id and v == 'present' %}checked{% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endif %}
+                > Present
+                <input type="radio" name="staff_{{ staff.id }}" value="absent"
+                    {% if existing|default:'' %}
+                        {% for k, v in existing.items %}
+                            {% if k == staff.id and v == 'absent' %}checked{% endif %}
+                        {% endfor %}
+                    {% endif %}
+                > Absent
             </td>
         </tr>
         {% endfor %}

@@ -45,9 +45,9 @@
     </div>
     <div class="info-row">
         <span class="info-label">Current Status: </span>
-        <span class="info-value" style="color: {% if record.status == 'present' %}#28a745{% else %}#dc3545{% endif %}">
-            {{ record.status|upper }}
-        </span>
+        <span class="info-value {% if record.status == 'present' %}status-present{% else %}status-absent{% endif %}">
+    {{ record.status|upper }}
+</span>
     </div>
 
     <form method="POST">

@@ -3,14 +3,15 @@
 {% block content %}
 <style>
     .summary-card {
-        background: #1e1e1e;
+        background: #ffffff;
         border-radius: 10px;
         padding: 20px;
         margin-bottom: 30px;
         overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     .section-title {
-        color: #f0c040;
+        color: #2c3e50;
         font-size: 18px;
         font-weight: bold;
         margin-bottom: 15px;
@@ -18,16 +19,16 @@
     table {
         width: 100%;
         border-collapse: collapse;
-        background: #1e1e1e;
+        background: #ffffff;
         border-radius: 10px;
         overflow: hidden;
-        margin-bottom: 30px;
+        margin-bottom: 10px;
     }
     th, td { padding: 12px 15px; text-align: left; }
-    th { background: #2c2c2c; color: #ffffff; }
-    tr:nth-child(even) { background: #252525; }
-    tr:hover { background: #333; }
-    td { color: #ddd; }
+    th { background: #2c3e50; color: #ffffff; }
+    tr:nth-child(even) { background: #f8f9fa; }
+    tr:hover { background: #eef2f7; transition: 0.2s; }
+    td { color: #333; border-bottom: 1px solid #eee; }
     .present { color: #28a745; font-weight: bold; }
     .absent { color: #dc3545; font-weight: bold; }
     .btn-edit {
@@ -49,8 +50,8 @@
     }
     .filter-bar input {
         padding: 7px; border-radius: 5px;
-        border: 1px solid #555;
-        background: #2c2c2c; color: white;
+        border: 1px solid #ccc;
+        background: #fff; color: #333;
     }
     .filter-bar button {
         padding: 7px 15px; background: #007bff;
@@ -59,7 +60,7 @@
     }
     .stat-present { color: #28a745; font-weight: bold; }
     .stat-absent { color: #dc3545; font-weight: bold; }
-    .stat-total { color: #a78bfa; font-weight: bold; }
+    .stat-total { color: #6f42c1; font-weight: bold; }
 </style>
 
 <a href="{% url 'admin:attendance_attendance_bulk' %}" class="btn-add">+ Mark Attendance</a>
@@ -93,10 +94,10 @@
 <div class="summary-card">
     <div class="section-title">📅 Date-wise Attendance Records</div>
     <form method="GET" class="filter-bar">
-        <label style="color:#ddd;">Filter by Date:</label>
+        <label style="color:#333;">Filter by Date:</label>
         <input type="date" name="filter_date" value="{{ filter_date }}">
         <button type="submit">Filter</button>
-        <a href="?" style="color:#aaa; text-decoration:none; padding:7px;">Clear</a>
+        <a href="?" style="color:#666; text-decoration:none; padding:7px;">Clear</a>
     </form>
 
     <table>

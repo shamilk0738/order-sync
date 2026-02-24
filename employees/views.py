@@ -5,39 +5,6 @@ from .models import Employee
 from django.contrib.auth.models import User
 from .forms import RegisterForm
 
-def register(request):
-    error = ""
-
-    if request.method == "POST":
-        form = RegisterForm(request.POST)
-
-        if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            email = form.cleaned_data['email']
-
-            # Check if username already exists
-            if User.objects.filter(username=username).exists():
-                error = "Username already exists"
-            else:
-                user = User.objects.create_user(
-                    username=username,
-                    password=password,
-                    email=email
-                )
-
-                employee = form.save(commit=False)
-                employee.user = user
-                employee.save()
-
-                return redirect('login')
-    else:
-        form = RegisterForm()
-
-    return render(request, 'register.html', {
-        'form': form,
-        'error': error
-    })
 
 
 def login_user(request):

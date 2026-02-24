@@ -1,0 +1,201 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<style>
+    .backend-wrapper {
+        background: #fff;
+        padding: 20px;
+        border-radius: 6px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+
+    .backend-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+
+    .backend-header h2 {
+        margin: 0;
+        font-size: 24px;
+    }
+
+    .filters {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+        align-items: center;
+    }
+
+    .filters input,
+    .filters select {
+        padding: 7px 12px;
+        font-size: 14px;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        outline: none;
+    }
+
+    .filters input:focus,
+    .filters select:focus {
+        border-color: #337ab7;
+        box-shadow: 0 0 0 3px rgba(51,122,183,0.15);
+    }
+
+    .btn-filter {
+        background: #337ab7;
+        color: #fff;
+        border: none;
+        padding: 7px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .btn-filter:hover { background: #286090; }
+
+    .btn-reset {
+        background: #f3f4f6;
+        color: #374151;
+        border: 1px solid #e5e7eb;
+        padding: 7px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        text-decoration: none;
+    }
+
+    .btn-reset:hover { background: #e5e7eb; }
+
+    .orders-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .orders-table th {
+        background: #f5f5f5;
+        text-align: left;
+        padding: 10px;
+        border-bottom: 2px solid #ddd;
+        font-size: 14px;
+    }
+
+    .orders-table td {
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+        font-size: 14px;
+    }
+
+    .badge {
+        padding: 3px 9px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
+        text-transform: capitalize;
+    }
+
+    .badge-pending  { background: #fef9c3; color: #854d0e; }
+    .badge-complete { background: #dff0d8; color: #3c763d; }
+    .badge-cancelled{ background: #fde8e8; color: #c0392b; }
+
+    .btn-view {
+        background: #337ab7;
+        color: #fff;
+        padding: 5px 12px;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 13px;
+    }
+
+    .btn-view:hover { background: #286090; }
+
+    .total-count {
+        font-size: 13px;
+        color: #6b7280;
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="backend-wrapper">
+
+    <div class="backend-header">
+        <h2>All Orders <span style="font-size:16px;color:#6b7280;">(Backend)</span></h2>
+    </div>
+
+    <!-- Filters -->
+    <form method="get" class="filters">
+        <input type="text" name="q" placeholder="Search name or user…"
+               value="{{ search }}">
+
+        <select name="status">
+            <option value="">All Statuses</option>
+            {% for s in statuses %}
+            <option value="{{ s }}" {% if s == selected_status %}selected{% endif %}>
+                {{ s|capfirst }}
+            </option>
+            {% endfor %}
+        </select>
+
+        <select name="store">
+            <option value="">All Stores</option>
+            {% for st in stores %}
+            <option value="{{ st.id }}" {% if st.id|stringformat:"s" == selected_store %}selected{% endif %}>
+                {{ st.store_name }}
+            </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit" class="btn-filter">Filter</button>
+        <a href="{% url 'backend_orders_list' %}" class="btn-reset">Reset</a>
+    </form>
+
+    <div class="total-count">Showing {{ orders|length }} order(s)</div>
+
+    <table class="orders-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Order Name</th>
+                <th>User</th>
+                <th>Store</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ order.order_name }}</td>
+                <td>{{ order.user.username }}</td>
+                <td>{{ order.store.store_name }}</td>
+                <td>₹ {{ order.total_price }}</td>
+                <td>
+                    <span class="badge
+                        {% if order.status == 'complete' %}badge-complete
+                        {% elif order.status == 'cancelled' %}badge-cancelled
+                        {% else %}badge-pending{% endif %}">
+                        {{ order.get_status_display }}
+                    </span>
+                </td>
+                <td>{{ order.created_at|date:"d-m-Y" }}</td>
+                <td>
+                    <a href="{% url 'order_detail' order.id %}" class="btn-view">View</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8" style="text-align:center;padding:24px;color:#6b7280;">
+                    No orders found.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock %}

@@ -17,7 +17,23 @@
         padding: 15px;
         font-size: 26px;
         font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
+
+    .btn-edit-toggle {
+        background: #fff;
+        color: #5a6fae;
+        border: none;
+        padding: 6px 16px;
+        border-radius: 5px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .btn-edit-toggle:hover { background: #e8eaf6; }
 
     .bill-info {
         display: flex;
@@ -45,9 +61,7 @@
         color: #fff;
     }
 
-    .bill-table td:nth-child(2) {
-        text-align: left;
-    }
+    .bill-table td:nth-child(2) { text-align: left; }
 
     .bill-total {
         text-align: right;
@@ -62,12 +76,116 @@
         color: #555;
         padding: 10px;
     }
+
+    /* Edit mode styles */
+    .edit-col { display: none; }
+    .edit-mode .edit-col { display: table-cell; }
+    .edit-mode .view-col { display: none; }
+
+    .qty-input {
+        width: 60px;
+        padding: 4px 6px;
+        border: 1px solid #aaa;
+        border-radius: 4px;
+        text-align: center;
+        font-size: 13px;
+    }
+
+    .btn-save-qty {
+        background: #5a6fae;
+        color: #fff;
+        border: none;
+        padding: 4px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+    }
+
+    .btn-save-qty:hover { background: #3d50a0; }
+
+    .btn-delete-item {
+        background: #e53e3e;
+        color: #fff;
+        border: none;
+        padding: 4px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+    }
+
+    .btn-delete-item:hover { background: #b91c1c; }
+
+    /* Add product section */
+    .add-product-section {
+        display: none;
+        padding: 15px;
+        border-top: 1px solid #ddd;
+    }
+
+    .add-product-section b {
+        font-size: 15px;
+    }
+
+    .add-search-input {
+        padding: 7px 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        width: 250px;
+        font-size: 13px;
+        margin: 10px 0;
+        display: block;
+    }
+
+    .add-product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .add-product-card {
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 10px;
+        background: #f9fafb;
+    }
+
+    .add-product-card b  { font-size: 13px; }
+    .add-product-card p  { font-size: 12px; color: #6b7280; margin: 3px 0; }
+
+    .add-product-form {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        margin-top: 6px;
+    }
+
+    .add-qty-input {
+        width: 55px;
+        padding: 4px 6px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 13px;
+    }
+
+    .btn-add-product {
+        background: #5a6fae;
+        color: #fff;
+        border: none;
+        padding: 4px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+    }
+
+    .btn-add-product:hover { background: #3d50a0; }
 </style>
 
-<div class="bill-box">
+<div class="bill-box" id="billBox">
 
     <div class="bill-header">
-        Estimate Bill
+        <span>Estimate Bill</span>
+        <button class="btn-edit-toggle" onclick="toggleEdit()">✏️ Edit</button>
     </div>
 
     <div class="bill-info">
@@ -86,9 +204,11 @@
             <tr>
                 <th>SL No</th>
                 <th>Item Name</th>
-                <th>Quantity</th>
+                <th class="view-col">Quantity</th>
+                <th class="edit-col">Quantity (Edit)</th>
                 <th>Rate</th>
                 <th>Amount</th>
+                <th class="edit-col">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -96,9 +216,38 @@
             <tr>
                 <td>{{ forloop.counter }}</td>
                 <td>{{ item.product.name }}</td>
-                <td>{{ item.quantity }}</td>
+
+                <!-- View mode quantity -->
+                <td class="view-col">{{ item.quantity }}</td>
+
+                <!-- Edit mode quantity -->
+                <td class="edit-col">
+                    <form method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="update_qty">
+                        <input type="hidden" name="item_id" value="{{ item.id }}">
+                        <input type="number" name="quantity"
+                               class="qty-input"
+                               value="{{ item.quantity }}"
+                               min="1"
+                               max="{{ item.product.stock }}">
+                        <button type="submit" class="btn-save-qty">✔ Save</button>
+                    </form>
+                </td>
+
                 <td>{{ item.product.rate }}</td>
                 <td>{{ item.subtotal }}</td>
+
+                <!-- Delete button (edit mode only) -->
+                <td class="edit-col">
+                    <form method="post" style="display:inline;"
+                          onsubmit="return confirm('Delete {{ item.product.name }}?')">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="delete_item">
+                        <input type="hidden" name="item_id" value="{{ item.id }}">
+                        <button type="submit" class="btn-delete-item">🗑 Delete</button>
+                    </form>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
@@ -112,10 +261,71 @@
         This is a computer generated estimate
     </div>
 
+    <!-- Add Product Section — edit mode only -->
+    <div class="add-product-section" id="addProductSection">
+        <b>➕ Add Product</b>
+        <input type="text"
+               class="add-search-input"
+               id="addProductSearch"
+               placeholder="Search product…"
+               oninput="filterAddProducts(this.value)">
+
+        <div class="add-product-grid" id="addProductGrid">
+            {% for product in products %}
+            <div class="add-product-card" data-name="{{ product.name|lower }}">
+                <b>{{ product.name }}</b>
+                <p>Rate: ₹{{ product.rate }}</p>
+                <p>Stock: {{ product.stock }}</p>
+                <form method="post" class="add-product-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action"     value="add_product">
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    <input type="number" name="new_qty"
+                           class="add-qty-input"
+                           placeholder="Qty"
+                           min="1"
+                           max="{{ product.stock }}">
+                    <button type="submit" class="btn-add-product">Add</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
     <div style="padding:10px;">
         <a href="{% url 'orders_list' %}">⬅ Back</a>
     </div>
 
 </div>
+
+<script>
+let editMode = false;
+
+function toggleEdit() {
+    editMode = !editMode;
+    const billBox    = document.getElementById('billBox');
+    const btn        = document.querySelector('.btn-edit-toggle');
+    const addSection = document.getElementById('addProductSection');
+
+    if (editMode) {
+        billBox.classList.add('edit-mode');
+        btn.textContent          = '✅ Done';
+        addSection.style.display = 'block';
+    } else {
+        billBox.classList.remove('edit-mode');
+        btn.textContent          = '✏️ Edit';
+        addSection.style.display = 'none';
+    }
+}
+
+function filterAddProducts(query) {
+    const q     = query.toLowerCase().trim();
+    const cards = document.querySelectorAll('.add-product-card');
+    cards.forEach(card => {
+        const name = card.dataset.name || '';
+        card.style.display = (!q || name.includes(q)) ? 'block' : 'none';
+    });
+}
+</script>
 
 {% endblock content %}

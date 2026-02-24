@@ -12,14 +12,64 @@
 
     .orders-header {
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        gap: 12px;
         margin-bottom: 15px;
+        flex-wrap: wrap;
     }
 
     .orders-header h2 {
         margin: 0;
         font-size: 24px;
+        white-space: nowrap;
+    }
+
+    /* ── Search bar ── */
+    .search-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        background: #f9fafb;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        padding: 6px 11px;
+        flex: 1;
+        min-width: 180px;
+        max-width: 300px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-wrapper:focus-within {
+        border-color: #337ab7;
+        box-shadow: 0 0 0 3px rgba(51,122,183,0.15);
+        background: #fff;
+    }
+
+    .search-wrapper svg {
+        flex-shrink: 0;
+        color: #9ca3af;
+    }
+
+    .search-input {
+        border: none;
+        outline: none;
+        font-size: 14px;
+        color: #1f2937;
+        width: 100%;
+        background: transparent;
+        font-family: inherit;
+    }
+
+    .search-input::placeholder { color: #9ca3af; }
+
+    /* spacer pushes filter to far right */
+    .header-spacer { flex: 1; }
+
+    /* ── Filter ── */
+    .orders-filter {
+        display: flex;
+        gap: 6px;
+        align-items: center;
     }
 
     .orders-filter select,
@@ -34,8 +84,12 @@
         border: none;
         cursor: pointer;
         border-radius: 3px;
+        transition: background 0.2s;
     }
 
+    .orders-filter button:hover { background: #286090; }
+
+    /* ── Table ── */
     .orders-table {
         width: 100%;
         border-collapse: collapse;
@@ -56,6 +110,8 @@
         font-size: 14px;
     }
 
+    .orders-table tr.hidden { display: none; }
+
     .status-complete {
         color: #3c763d;
         background: #dff0d8;
@@ -73,9 +129,9 @@
         font-size: 13px;
     }
 
-    .btn-view:hover {
-        background: #286090;
-    }
+    .btn-view:hover { background: #286090; }
+
+    .no-results-row { display: none; }
 </style>
 
 <div class="orders-wrapper">
@@ -83,17 +139,21 @@
     <div class="orders-header">
         <h2>Orders</h2>
 
-        <!-- UI only (optional filter look) -->
-        <div class="orders-filter">
-            <select>
-                <option>Status</option>
-                <option>Complete</option>
-                <option>Pending</option>
-            </select>
-            <button>Filter</button>
+        <!-- Search bar — left side, right after title -->
+        <div class="search-wrapper">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input class="search-input" id="orderSearch"
+                   type="text" placeholder="Search orders…" autocomplete="off">
         </div>
-    </div>
 
+        <div class="header-spacer"></div>
+
+        
     <table class="orders-table">
         <thead>
             <tr>
@@ -105,9 +165,11 @@
                 <th>Actions</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="ordersBody">
             {% for order in orders %}
-            <tr>
+            <tr data-name="{{ order.order_name|lower }}"
+                data-user="{{ order.user.username|lower }}"
+                data-status="{{ order.get_status_display|lower }}">
                 <td>{{ order.order_name }}</td>
                 <td>{{ order.user.username }}</td>
                 <td>₹ {{ order.total_price }}</td>
@@ -118,29 +180,56 @@
                 </td>
                 <td>{{ order.created_at|date:"d-m-Y" }}</td>
                 <td>
-                    <a href="{% url 'order_detail' order.id %}" class="btn-view">
-                        View
-                    </a>
+                    <a href="{% url 'order_detail' order.id %}" class="btn-view">View</a>
                 </td>
             </tr>
             {% empty %}
-
-
-
-
-
-
-
-
-
-
             <tr>
                 <td colspan="6">No orders found.</td>
             </tr>
             {% endfor %}
+
+            <!-- shown when search/filter yields nothing -->
+            <tr class="no-results-row" id="noResultsRow">
+                <td colspan="6" style="text-align:center; color:#6b7280;">
+                    No orders match your search.
+                </td>
+            </tr>
         </tbody>
     </table>
 
 </div>
+
+<script>
+const searchInput  = document.getElementById('orderSearch');
+const statusFilter = document.getElementById('statusFilter');
+const rows         = document.querySelectorAll('#ordersBody tr[data-name]');
+const noResultsRow = document.getElementById('noResultsRow');
+
+function filterRows() {
+    const query  = searchInput.value.trim().toLowerCase();
+    const status = statusFilter.value.toLowerCase();
+    let visible  = 0;
+
+    rows.forEach(row => {
+        const matchSearch = !query ||
+            row.dataset.name.includes(query) ||
+            row.dataset.user.includes(query);
+        const matchStatus = !status || row.dataset.status.includes(status);
+
+        const show = matchSearch && matchStatus;
+        row.classList.toggle('hidden', !show);
+        if (show) visible++;
+    });
+
+    noResultsRow.style.display = visible === 0 ? 'table-row' : 'none';
+}
+
+// Live search as user types
+searchInput.addEventListener('input', filterRows);
+
+// Filter button applies status dropdown
+function applyFilter() { filterRows(); }
+</script>
 
 {% endblock %}

@@ -2,6 +2,8 @@
 
 {% block head %}
 <style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap');
+
 :root {
     --primary: #2563eb;
     --primary-light: #e0e7ff;
@@ -10,6 +12,10 @@
     --border: #e5e7eb;
     --bg-light: #f9fafb;
 }
+
+* { box-sizing: border-box; }
+
+body { font-family: 'DM Sans', sans-serif; }
 
 .card {
     background: #fff;
@@ -21,20 +27,62 @@
 }
 
 .card-header {
-    padding: 20px 26px;
+    padding: 16px 26px;
     background: linear-gradient(135deg, #f8fafc, #eef2ff);
     border-bottom: 1px solid var(--border);
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
 }
 
 .card-header h2 {
     margin: 0;
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 600;
     color: var(--text-dark);
+    white-space: nowrap;
 }
+
+/* ── Search bar ─────────────────────────────────── */
+.search-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 6px 12px;
+    flex: 1;
+    min-width: 180px;
+    max-width: 320px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-wrapper:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+}
+
+.search-wrapper svg {
+    flex-shrink: 0;
+    color: var(--text-muted);
+}
+
+.search-input {
+    border: none;
+    outline: none;
+    font-size: 14px;
+    color: var(--text-dark);
+    width: 100%;
+    background: transparent;
+    font-family: inherit;
+}
+
+.search-input::placeholder { color: var(--text-muted); }
+
+/* spacer pushes button to far right */
+.header-spacer { flex: 1; }
 
 .btn-new-order {
     background: var(--primary);
@@ -44,12 +92,13 @@
     text-decoration: none;
     font-size: 14px;
     font-weight: 500;
+    white-space: nowrap;
+    transition: background 0.2s;
 }
 
-.btn-new-order:hover {
-    background: #1d4ed8;
-}
+.btn-new-order:hover { background: #1d4ed8; }
 
+/* ── Store list ─────────────────────────────────── */
 .store-list {
     list-style: none;
     margin: 0;
@@ -63,11 +112,14 @@
     gap: 16px;
     padding: 16px 26px;
     border-bottom: 1px solid var(--border);
-    transition: all 0.25s ease;
+    transition: background 0.2s;
 }
 
 .store-item:last-child { border-bottom: none; }
 .store-item:hover { background: var(--bg-light); }
+
+/* hide items that don't match search */
+.store-item.hidden { display: none; }
 
 .store-left {
     display: flex;
@@ -81,7 +133,7 @@
     background: var(--primary-light);
     color: var(--primary);
     border-radius: 50%;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     display: flex;
     align-items: center;
@@ -89,13 +141,12 @@
     flex-shrink: 0;
 }
 
-/* Click store name → see orders by date */
 .store-link {
     text-decoration: none;
     color: var(--text-dark);
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 500;
-    transition: color 0.2s ease;
+    transition: color 0.2s;
 }
 
 .store-link:hover { color: var(--primary); }
@@ -110,17 +161,25 @@
     text-decoration: none;
     white-space: nowrap;
     font-weight: 500;
+    transition: background 0.2s;
 }
 
-.btn-order-now:hover {
-    background: #d1fae5;
-}
+.btn-order-now:hover { background: #d1fae5; }
 
 .no-data {
     padding: 32px;
     text-align: center;
     color: var(--text-muted);
     font-size: 15px;
+}
+
+/* shown when search yields nothing */
+.no-results {
+    display: none;
+    padding: 28px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 14px;
 }
 
 @keyframes fadeIn {
@@ -134,21 +193,31 @@
 <div class="card">
     <div class="card-header">
         <h2>Stores</h2>
+
+        <!-- Search bar sits right after the title -->
+        <div class="search-wrapper">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input class="search-input" id="storeSearch"
+                   type="text" placeholder="Search stores…" autocomplete="off">
+        </div>
+
+        <div class="header-spacer"></div>
         <a href="{% url 'create_order' %}" class="btn-new-order">+ New Order</a>
     </div>
 
     <div class="card-body">
-        <ul class="store-list">
+        <ul class="store-list" id="storeList">
             {% for store in stores %}
-            <li class="store-item">
+            <li class="store-item" data-name="{{ store.store_name|lower }}">
                 <div class="store-left">
                     <div class="store-index">{{ forloop.counter }}</div>
-                    <!-- Click store name → orders grouped by date -->
                     <a class="store-link" href="{% url 'store_orders' store.id %}">
                         {{ store.store_name }}
                     </a>
                 </div>
-                <!-- Quick shortcut: create order for this store directly -->
                 <a class="btn-order-now"
                    href="{% url 'create_order' %}?store_id={{ store.id }}">
                     + Order
@@ -158,6 +227,26 @@
             <div class="no-data">No stores found.</div>
             {% endfor %}
         </ul>
+        <div class="no-results" id="noResults">No stores match your search.</div>
     </div>
 </div>
+
+<script>
+const searchInput = document.getElementById('storeSearch');
+const items       = document.querySelectorAll('#storeList .store-item');
+const noResults   = document.getElementById('noResults');
+
+searchInput.addEventListener('input', () => {
+    const query = searchInput.value.trim().toLowerCase();
+    let visible = 0;
+
+    items.forEach(item => {
+        const match = item.dataset.name.includes(query);
+        item.classList.toggle('hidden', !match);
+        if (match) visible++;
+    });
+
+    noResults.style.display = visible === 0 ? 'block' : 'none';
+});
+</script>
 {% endblock %}

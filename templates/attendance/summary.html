@@ -1,109 +1,333 @@
 {% extends 'dashboard/base.html' %}
 
 {% block content %}
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@700&display=swap" rel="stylesheet">
 
 <style>
-    .card {
-        background: white;
-        padding: 30px;
-        border-radius: 10px;
-        max-width: 900px;
-        margin: auto;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-    }
+*, *::before, *::after { box-sizing: border-box; }
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    /* Center everything */
-th, td {
-    text-align: center;
+.att-wrapper {
+    font-family: 'DM Sans', sans-serif;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 10px 0 40px;
 }
 
-/* Name column left aligned */
-th:nth-child(2),
-td:nth-child(2) {
-    text-align: left;
+/* ── Header ── */
+.att-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
-/* Equal column width */
-table {
+.att-header h2 {
+    font-family: 'Sora', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+    letter-spacing: -0.5px;
+}
+
+.date-badge {
+    background: #eff6ff;
+    color: #2563eb;
+    border: 1.5px solid #bfdbfe;
+    border-radius: 10px;
+    padding: 8px 18px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* ── Stats Cards ── */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 22px 24px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    border: 1.5px solid #f1f5f9;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+}
+
+.stat-icon-box {
+    width: 54px;
+    height: 54px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    flex-shrink: 0;
+}
+
+.stat-card.blue  .stat-icon-box { background: #eff6ff; }
+.stat-card.green .stat-icon-box { background: #f0fdf4; }
+.stat-card.red   .stat-icon-box { background: #fff5f5; }
+
+.stat-info { display: flex; flex-direction: column; gap: 4px; }
+
+.stat-label {
+    font-size: 11.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #94a3b8;
+}
+
+.stat-value {
+    font-family: 'Sora', sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.stat-card.blue  .stat-value { color: #2563eb; }
+.stat-card.green .stat-value { color: #16a34a; }
+.stat-card.red   .stat-value { color: #dc2626; }
+
+/* ── Search Bar ── */
+.search-bar-wrapper {
+    position: relative;
+    margin-bottom: 16px;
+}
+
+.search-bar-wrapper .search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    pointer-events: none;
+    display: flex;
+}
+
+.search-bar-wrapper input {
+    width: 100%;
+    padding: 12px 14px 12px 42px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    background: #fff;
+    outline: none;
+    color: #1e293b;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-bar-wrapper input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.13);
+}
+
+/* ── Table ── */
+.table-card {
+    background: #fff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.att-table {
+    width: 100%;
+    border-collapse: collapse;
     table-layout: fixed;
 }
 
-/* Zebra row effect (alternate row color) */
-tr:nth-child(even) {
-    background-color: #f8f9fa;
+.att-table thead tr { background: #1e293b; }
+
+.att-table th {
+    padding: 13px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-align: center;
 }
 
-/* Hover effect */
-tr:hover {
-    background-color: #eef2f7;
-    transition: 0.2s;
-}
-    .sl-no {
-    color: #060606;   /* Blue */
-    font-weight: bold;
-    }
-    .total-col {
-    color: #8e44ad;   /* Purple */
-    font-weight: bold;
+.att-table th:nth-child(2) { text-align: left; }
+
+.att-table td {
+    padding: 13px 16px;
+    font-size: 14px;
+    color: #1e293b;
+    border-bottom: 1px solid #f1f5f9;
+    text-align: center;
+    vertical-align: middle;
 }
 
-    .today-col {
-    color: #d35400;   /* Orange */
-    font-weight: bold;
-    }
+.att-table td:nth-child(2) { text-align: left; }
+.att-table tbody tr:last-child td { border-bottom: none; }
+.att-table tbody tr { transition: background 0.15s; }
+.att-table tbody tr:hover { background: #f8fafc; }
+.att-table tbody tr:nth-child(even) { background: #fafbfc; }
+.att-table tbody tr:nth-child(even):hover { background: #f1f5f9; }
+.att-table tbody tr.row-hidden { display: none; }
 
-    th {
-        background: #2c3e50;
-        color: white;
-        padding: 12px;
-    }
-    .name-text {
-    color: #1e1d1d;   /* Red color */
-    font-weight: bold;
-    }
+.sl-cell     { font-weight: 700; color: #cbd5e1; font-size: 13px; }
+.name-cell   { font-weight: 700; color: #0f172a; font-size: 14px; }
+.present-cell{ font-weight: 700; color: #16a34a; font-size: 15px; }
+.absent-cell { font-weight: 700; color: #dc2626; font-size: 15px; }
+.total-cell  { font-weight: 700; color: #7c3aed; font-size: 15px; }
 
-    td {
-        padding: 12px;
-        border-bottom: 1px solid #eee;
-    }
+.today-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12.5px;
+    font-weight: 700;
+}
 
-    .present { color: green; font-weight: bold; }
-    .absent { color: red; font-weight: bold; }
+.today-present { background: #e6f9f0; color: #16a34a; border: 1.5px solid #a3e6c5; }
+.today-absent  { background: #fff0f0; color: #dc2626; border: 1.5px solid #f9b8b8; }
+.today-default { background: #fff4e5; color: #e07b00; border: 1.5px solid #fcd9a0; }
+
+.empty-state { text-align: center; padding: 48px; color: #94a3b8; font-size: 15px; }
+
+#no-search-results {
+    display: none;
+    text-align: center;
+    padding: 30px;
+    color: #94a3b8;
+    font-size: 14px;
+}
 </style>
 
-<div class="card">
-    <h2>Attendance Summary</h2>
-    <p>Date: {{ today }}</p>
+<div class="att-wrapper">
 
-    <table>
-        <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Present</th>
-            <th>Absent</th>
-            <th>Total Attendance</th>
-            <th>Today</th>
-        </tr>
+    <div class="att-header">
+        <h2>📋 Attendance Summary</h2>
+        <div class="date-badge">📅 {{ today }}</div>
+    </div>
 
-        {% for s in summary %}
-        <tr>
-            <td class="sl-no">{{ forloop.counter }}</td>
-            <td class="name-text">{{ s.staff.name|upper }}</td>
-            <td class="present">{{ s.present }}</td>
-            <td class="absent">{{ s.absent }}</td>
-            <td class="total-col">{{ s.total }}</td>
-            <td class="today-col">{{ s.today|upper }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="6">No Staff Found</td>
-        </tr>
-        {% endfor %}
-    </table>
+    <!-- 3 Stat Cards -->
+    <div class="stats-row">
+        <div class="stat-card blue">
+            <div class="stat-icon-box">👥</div>
+            <div class="stat-info">
+                <div class="stat-label">Total Staff</div>
+                <div class="stat-value">{{ summary|length }}</div>
+            </div>
+        </div>
+        <div class="stat-card green">
+            <div class="stat-icon-box">✅</div>
+            <div class="stat-info">
+                <div class="stat-label">Present Today</div>
+                <div class="stat-value" id="stat-present">—</div>
+            </div>
+        </div>
+        <div class="stat-card red">
+            <div class="stat-icon-box">❌</div>
+            <div class="stat-info">
+                <div class="stat-label">Absent Today</div>
+                <div class="stat-value" id="stat-absent">—</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search -->
+    <div class="search-bar-wrapper">
+        <span class="search-icon">
+            <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+        </span>
+        <input type="text" id="name-search" placeholder="Search staff name..." autocomplete="off">
+    </div>
+
+    <!-- Table -->
+    <div class="table-card">
+        <table class="att-table">
+            <thead>
+                <tr>
+                    <th style="width:50px;">#</th>
+                    <th>Name</th>
+                    <th>Present</th>
+                    <th>Absent</th>
+                    <th>Total</th>
+                    <th>Today</th>
+                </tr>
+            </thead>
+            <tbody id="att-tbody">
+                {% for s in summary %}
+                <tr data-name="{{ s.staff.name|lower }}" data-today="{{ s.today|upper }}">
+                    <td class="sl-cell">{{ forloop.counter }}</td>
+                    <td class="name-cell">{{ s.staff.name|upper }}</td>
+                    <td class="present-cell">{{ s.present }}</td>
+                    <td class="absent-cell">{{ s.absent }}</td>
+                    <td class="total-cell">{{ s.total }}</td>
+                    <td>
+                        {% with tv=s.today|upper %}
+                        <span class="today-badge
+                            {% if tv == 'PRESENT' %}today-present
+                            {% elif tv == 'ABSENT' %}today-absent
+                            {% else %}today-default{% endif %}">
+                            {{ tv }}
+                        </span>
+                        {% endwith %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6">
+                        <div class="empty-state">👥 No Staff Found</div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div id="no-search-results">No staff match your search.</div>
+    </div>
+
 </div>
 
+<script>
+var rows = document.querySelectorAll('#att-tbody tr[data-today]');
+var presentCount = 0, absentCount = 0;
+
+rows.forEach(function(row) {
+    if (row.dataset.today === 'PRESENT') presentCount++;
+    else if (row.dataset.today === 'ABSENT') absentCount++;
+});
+
+document.getElementById('stat-present').textContent = presentCount;
+document.getElementById('stat-absent').textContent  = absentCount;
+
+var searchInput = document.getElementById('name-search');
+var noResults   = document.getElementById('no-search-results');
+
+searchInput.addEventListener('input', function() {
+    var q = searchInput.value.toLowerCase().trim();
+    var visible = 0;
+    rows.forEach(function(row) {
+        var name = row.dataset.name || '';
+        if (!q || name.includes(q)) {
+            row.classList.remove('row-hidden');
+            visible++;
+        } else {
+            row.classList.add('row-hidden');
+        }
+    });
+    noResults.style.display = (visible === 0 && q) ? 'block' : 'none';
+});
+</script>
 {% endblock %}

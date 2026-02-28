@@ -1,6 +1,3 @@
-from django.shortcuts import render
-
-# Create your views here.
 from django.shortcuts import render, get_object_or_404
 from .models import Product
 
@@ -16,11 +13,15 @@ def product_detail(request, id):
     product = get_object_or_404(Product, id=id)
     total = None
 
+    # Back button-നായി store_id എടുക്കുന്നു
+    store_id = request.GET.get('store_id') or request.POST.get('store_id', '')
+
     if request.method == "POST":
         quantity = int(request.POST.get('quantity'))
         total = quantity * product.rate
 
     return render(request, 'product/product_item.html', {
         'product': product,
-        'total': total
+        'total': total,
+        'store_id': store_id,  # template-ലേക്ക് pass ചെയ്യുന്നു
     })

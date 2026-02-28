@@ -3,174 +3,354 @@
 
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/products.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
 <style>
+*, *::before, *::after { box-sizing: border-box; }
+
 .order-container {
-    max-width: 860px;
+    max-width: 900px;
     margin: 0 auto;
+    padding: 10px 0 40px;
+    font-family: 'DM Sans', sans-serif;
 }
 
 .order-container h2 {
-    font-size: 22px;
+    font-family: 'Sora', sans-serif;
+    font-size: 24px;
     font-weight: 700;
-    margin-bottom: 20px;
-    color: #1f2937;
+    margin-bottom: 28px;
+    color: #0f172a;
+    letter-spacing: -0.5px;
 }
 
-.form-group {
-    margin-bottom: 20px;
+.search-wrapper {
+    position: relative;
+    width: 100%;
 }
+
+.search-wrapper .search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+}
+
+.search-wrapper input {
+    width: 100%;
+    padding: 12px 14px 12px 42px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    background: #fff;
+    outline: none;
+    color: #1e293b;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-wrapper input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.13);
+}
+
+.form-group { margin-bottom: 24px; }
 
 .form-group label {
     display: block;
     font-weight: 600;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     color: #374151;
-    font-size: 14px;
+    font-size: 13.5px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
 }
 
-.store-select {
-    width: 100%;
-    padding: 11px 14px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    font-size: 15px;
+.store-search-container { position: relative; }
+
+.store-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
     background: #fff;
-    cursor: pointer;
-    outline: none;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    z-index: 100;
+    max-height: 240px;
+    overflow-y: auto;
 }
 
-.store-select:focus { border-color: #2563eb; box-shadow: 0 0 0 3px #e0e7ff; }
+.store-dropdown.open { display: block; }
+
+.store-option {
+    padding: 11px 16px;
+    cursor: pointer;
+    font-size: 15px;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.15s;
+}
+
+.store-option:hover { background: #f0f7ff; color: #2563eb; }
+
+.store-option .store-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #3b82f6;
+    flex-shrink: 0;
+}
+
+.store-option-empty {
+    padding: 14px 16px;
+    color: #94a3b8;
+    font-size: 14px;
+    text-align: center;
+}
+
+#store-hidden { display: none; }
 
 .section-title {
+    font-family: 'Sora', sans-serif;
     font-size: 17px;
     font-weight: 700;
-    color: #1f2937;
-    margin: 24px 0 14px;
-    padding-bottom: 8px;
-    border-bottom: 2px solid #e5e7eb;
-    
+    color: #1e293b;
+    margin: 30px 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-/* Product cards */
+.section-title::after {
+    content: '';
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(to right, #e2e8f0, transparent);
+    border-radius: 2px;
+}
+
+.product-search-bar { margin-bottom: 20px; }
+
 .products-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
     gap: 16px;
-    margin-bottom: 24px;
+    margin-bottom: 28px;
 }
 
 .product-card {
     background: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 12px;
     padding: 14px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    transition: box-shadow 0.2s;
+    gap: 10px;
+    transition: box-shadow 0.2s, border-color 0.2s, transform 0.15s;
 }
 
-.product-card:hover { box-shadow: 0 6px 18px rgba(0,0,0,0.09); }
+.product-card:hover {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    border-color: #bfdbfe;
+    transform: translateY(-2px);
+}
+
+.product-card.hidden { display: none; }
 
 .product-image img {
     width: 100%;
     height: 130px;
     object-fit: cover;
-    border-radius: 6px;
+    border-radius: 8px;
 }
 
-.product-details b { font-size: 15px; color: #1f2937; }
-.product-details p { margin: 2px 0; font-size: 13px; color: #6b7280; }
+.product-details b {
+    font-size: 14.5px;
+    color: #0f172a;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+}
 
-.quantity-input label { font-size: 13px; font-weight: 600; color: #374151; }
+.product-details .price-row {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 6px;
+}
+
+.price-tag { color: #16a34a; font-size: 13.5px; font-weight: 700; }
+.mrp-tag   { color: #d97706; font-size: 13.5px; font-weight: 700; }
+
+.stock-badge { font-size: 12px; color: #64748b; margin-top: 2px; }
+
+.quantity-input { margin-top: 6px; }
+.quantity-input label { font-size: 12.5px; font-weight: 600; color: #475569; }
 
 .quantity-input input {
     width: 100%;
-    padding: 7px 10px;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
+    padding: 8px 10px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 7px;
     font-size: 14px;
     margin-top: 4px;
+    font-family: 'DM Sans', sans-serif;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .quantity-input input:focus {
-    border-color: #2563eb;
+    border-color: #3b82f6;
     outline: none;
-    box-shadow: 0 0 0 2px #e0e7ff;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
 }
 
 .product-card-link {
-    font-size: 12px;
+    display: block;
+    text-align: center;
+    font-size: 13px;
     color: #2563eb;
     text-decoration: none;
-    text-align: right;
+    font-weight: 600;
+    border: 1.5px solid #bfdbfe;
+    border-radius: 7px;
+    padding: 7px 12px;
+    transition: background 0.15s, color 0.15s;
+}
+
+.product-card-link:hover {
+    background: #2563eb;
+    color: #fff;
+    border-color: #2563eb;
 }
 
 .btn-place-order {
-    background: #2563eb;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
     color: #fff;
     border: none;
-    padding: 12px 32px;
-    border-radius: 8px;
+    padding: 14px 32px;
+    border-radius: 10px;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
     width: 100%;
-    margin-top: 10px;
+    margin-top: 8px;
+    font-family: 'DM Sans', sans-serif;
+    box-shadow: 0 4px 14px rgba(37,99,235,0.3);
+    transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
 }
 
-.btn-place-order:hover { background: #1d4ed8; }
+.btn-place-order:hover {
+    background: linear-gradient(135deg, #1d4ed8, #1e40af);
+    box-shadow: 0 6px 20px rgba(37,99,235,0.4);
+    transform: translateY(-1px);
+}
 
 .hint-box {
     text-align: center;
-    padding: 40px;
-    color: #9ca3af;
-    background: #f9fafb;
-    border: 2px dashed #e5e7eb;
-    border-radius: 10px;
+    padding: 48px 40px;
+    color: #94a3b8;
+    background: #f8fafc;
+    border: 2px dashed #e2e8f0;
+    border-radius: 14px;
     font-size: 15px;
     margin-top: 10px;
+}
+
+.no-product-results {
+    display: none;
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 14px;
+    padding: 30px;
 }
 </style>
 {% endblock head %}
 
 {% block content %}
-<div class="order-container">
-    <h2>Create Order</h2>
 
-    <form method="post">
+{# Django data — HTML attribute-ൽ വയ്ക്കുന്നു, script-ൽ template tags ഇല്ല #}
+<div id="page-data"
+     data-store-id="{% if store %}{{ store.id }}{% else %}{% endif %}"
+     data-create-order-url="{% url 'create_order' %}"
+     style="display:none;"></div>
+
+<div class="order-container">
+    <h2>🛒 Create Order</h2>
+
+    <form method="post" id="order-form">
         {% csrf_token %}
 
-        <!-- ── Store Dropdown ── -->
+        <!-- Store Search -->
         <div class="form-group">
             <label>Store Name</label>
-            <select name="store" class="store-select" required
-                    onchange="
-                        let val = this.value;
-                        if(val){
-                            window.location.href = '{% url 'create_order' %}?store_id=' + val;
-                        }
-                    ">
-                <option value="">— Select Store —</option>
-                {% for s in stores %}
-                    <option value="{{ s.id }}"
-                        {% if store and s.id == store.id %}selected{% endif %}>
+            <div class="store-search-container">
+                <div class="search-wrapper">
+                    <span class="search-icon">
+                        <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                        </svg>
+                    </span>
+                    <input type="text"
+                           id="store-search-input"
+                           placeholder="Search store..."
+                           autocomplete="off"
+                           value="{% if store %}{{ store.store_name }}{% endif %}">
+                </div>
+
+                <div class="store-dropdown" id="store-dropdown">
+                    {% for s in stores %}
+                    <div class="store-option" data-id="{{ s.id }}" data-name="{{ s.store_name }}">
+                        <span class="store-dot"></span>
                         {{ s.store_name }}
-                    </option>
+                    </div>
+                    {% empty %}
+                    <div class="store-option-empty">No stores found</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <select name="store" id="store-hidden" required>
+                <option value="">—</option>
+                {% for s in stores %}
+                <option value="{{ s.id }}" {% if store and s.id == store.id %}selected{% endif %}>
+                    {{ s.store_name }}
+                </option>
                 {% endfor %}
             </select>
         </div>
 
-        <!-- ── Products (show only when store is selected) ── -->
+        <!-- Products -->
         {% if store %}
+            <input type="hidden" name="store" value="{{ store.id }}">
             <div class="section-title">Products — {{ store.store_name }}</div>
 
-            <!-- Pass store id for POST submission -->
-            <input type="hidden" name="store" value="{{ store.id }}">
+            <div class="product-search-bar">
+                <div class="search-wrapper">
+                    <span class="search-icon">
+                        <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                        </svg>
+                    </span>
+                    <input type="text"
+                           id="product-search-input"
+                           placeholder="Search products..."
+                           autocomplete="off">
+                </div>
+            </div>
 
-            <div class="products-list">
+            <div class="products-list" id="products-list">
                 {% for product in products %}
-                <div class="product-card">
+                <div class="product-card" data-name="{{ product.name|lower }}">
                     {% if product.image %}
                     <div class="product-image">
                         <img src="{{ product.image.url }}" alt="{{ product.name }}">
@@ -179,12 +359,14 @@
 
                     <div class="product-details">
                         <b>{{ product.name }}</b>
-                        <p>MRP: ₹{{ product.mrp }}</p>
-                        <p>Rate: ₹{{ product.rate }}</p>
-                        <p>Stock: {{ product.stock }}</p>
+                        <div class="price-row">
+                            <span class="mrp-tag">MRP: ₹{{ product.mrp }}</span>
+                            <span class="price-tag">Rate: ₹{{ product.rate }}</span>
+                        </div>
+                        <p class="stock-badge">📦 Stock: {{ product.stock }}</p>
 
                         <div class="quantity-input">
-                            <label for="qty_{{ product.id }}">Quantity:</label>
+                            <label for="qty_{{ product.id }}">Quantity</label>
                             <input type="number"
                                    id="qty_{{ product.id }}"
                                    name="qty_{{ product.id }}"
@@ -194,19 +376,19 @@
                         </div>
                     </div>
 
-                    <a href="{% url 'product_detail' product.id %}" class="product-card-link">
-                        view item →
+                    <a href="{% url 'product_detail' product.id %}?store_id={{ store.id }}" class="product-card-link">
+                        View Item →
                     </a>
                 </div>
                 {% empty %}
-                <p style="color:#9ca3af;">No products available.</p>
+                <p style="color:#94a3b8; grid-column:1/-1;">No products available.</p>
                 {% endfor %}
+                <div class="no-product-results" id="no-product-results">No products match your search.</div>
             </div>
 
             <button type="submit" class="btn-place-order">✅ Place Order</button>
 
         {% else %}
-            <!-- Prompt user to select store first -->
             <div class="hint-box">
                 👆 Please select a store above to see products
             </div>
@@ -214,4 +396,121 @@
 
     </form>
 </div>
+
+<script>
+// Django data — HTML data attribute-ൽ നിന്ന് വായിക്കുന്നു (script-ൽ template tags ഇല്ല)
+var pageData        = document.getElementById('page-data');
+var storeId         = pageData.dataset.storeId;
+var createOrderUrl  = pageData.dataset.createOrderUrl;
+
+// ── Store Search ──
+var storeInput    = document.getElementById('store-search-input');
+var storeDropdown = document.getElementById('store-dropdown');
+var storeHidden   = document.getElementById('store-hidden');
+var storeOptions  = storeDropdown ? storeDropdown.querySelectorAll('.store-option') : [];
+
+function filterStores(q) {
+    var any = false;
+    storeOptions.forEach(function(opt) {
+        var match = opt.dataset.name.toLowerCase().includes(q.toLowerCase());
+        opt.style.display = match ? '' : 'none';
+        if (match) any = true;
+    });
+    var empty = storeDropdown.querySelector('.store-option-empty');
+    if (empty) empty.style.display = any ? 'none' : '';
+}
+
+if (storeInput && storeDropdown) {
+    storeInput.addEventListener('focus', function() {
+        filterStores(storeInput.value);
+        storeDropdown.classList.add('open');
+    });
+
+    storeInput.addEventListener('input', function() {
+        filterStores(storeInput.value);
+        storeDropdown.classList.add('open');
+    });
+
+    storeOptions.forEach(function(opt) {
+        opt.addEventListener('click', function() {
+            var id   = opt.dataset.id;
+            var name = opt.dataset.name;
+            storeInput.value = name;
+            Array.from(storeHidden.options).forEach(function(o) {
+                o.selected = (o.value === id);
+            });
+            storeDropdown.classList.remove('open');
+            window.location.href = createOrderUrl + '?store_id=' + id;
+        });
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!storeInput.contains(e.target) && !storeDropdown.contains(e.target)) {
+            storeDropdown.classList.remove('open');
+        }
+    });
+}
+
+// ── Quantity Save / Restore via localStorage ──
+if (storeId) {
+    var STORE_KEY = 'order_quantities_' + storeId;
+
+    function saveQuantities() {
+        var data = {};
+        document.querySelectorAll('#products-list .product-card input[type="number"]').forEach(function(inp) {
+            if (inp.value && inp.value !== '0') {
+                data[inp.id] = inp.value;
+            }
+        });
+        localStorage.setItem(STORE_KEY, JSON.stringify(data));
+    }
+
+    function restoreQuantities() {
+        var saved = localStorage.getItem(STORE_KEY);
+        if (!saved) return;
+        try {
+            var data = JSON.parse(saved);
+            Object.keys(data).forEach(function(id) {
+                var inp = document.getElementById(id);
+                if (inp) inp.value = data[id];
+            });
+        } catch(e) {}
+    }
+
+    restoreQuantities();
+
+    document.querySelectorAll('#products-list .product-card input[type="number"]').forEach(function(inp) {
+        inp.addEventListener('input', saveQuantities);
+    });
+
+    var orderForm = document.getElementById('order-form');
+    if (orderForm) {
+        orderForm.addEventListener('submit', function() {
+            localStorage.removeItem(STORE_KEY);
+        });
+    }
+}
+
+// ── Product Search ──
+var productInput = document.getElementById('product-search-input');
+var productCards = document.querySelectorAll('#products-list .product-card');
+var noResults    = document.getElementById('no-product-results');
+
+if (productInput) {
+    productInput.addEventListener('input', function() {
+        var q = productInput.value.toLowerCase().trim();
+        var visible = 0;
+        productCards.forEach(function(card) {
+            var name = card.dataset.name || '';
+            if (!q || name.includes(q)) {
+                card.classList.remove('hidden');
+                visible++;
+            } else {
+                card.classList.add('hidden');
+            }
+        });
+        if (noResults) noResults.style.display = (visible === 0 && q) ? 'block' : 'none';
+    });
+}
+</script>
 {% endblock content %}

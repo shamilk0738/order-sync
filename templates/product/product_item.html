@@ -41,14 +41,22 @@
     color:#fff;
     border:none;
     border-radius:6px;
+    cursor:pointer;
+    font-size:15px;
+    font-weight:600;
 }
+
+.detail-btn:hover { background:#1d4ed8; }
 
 .back-link{
     display:inline-block;
     margin-top:15px;
     color:#2563eb;
     text-decoration:none;
+    font-weight:500;
 }
+
+.back-link:hover { text-decoration:underline; }
 </style>
 
 <div class="product-detail-wrapper">
@@ -77,10 +85,8 @@
         <h3>Total: ₹{{ total }}</h3>
         {% endif %}
 
-        <a href="{% url 'create_order' %}" class="back-link">
-    ← Back to Products
-</a>
-
+        <a href="{% url 'create_order' %}?store_id={{ store_id }}" class="back-link">
+            ← Back to Products
         </a>
 
     </div>

@@ -1,235 +1,256 @@
 {% extends 'dashboard/base.html' %}
 
 {% block content %}
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@700&display=swap" rel="stylesheet">
 
 <style>
-    .orders-wrapper {
-        background: #fff;
-        padding: 20px;
-        border-radius: 6px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
-    }
+*, *::before, *::after { box-sizing: border-box; }
 
-    .orders-header {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 15px;
-        flex-wrap: wrap;
-    }
+.orders-wrapper {
+    font-family: 'DM Sans', sans-serif;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 10px 0 40px;
+}
 
-    .orders-header h2 {
-        margin: 0;
-        font-size: 24px;
-        white-space: nowrap;
-    }
+/* ── Header ── */
+.orders-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
 
-    /* ── Search bar ── */
-    .search-wrapper {
-        display: flex;
-        align-items: center;
-        gap: 7px;
-        background: #f9fafb;
-        border: 1px solid #d1d5db;
-        border-radius: 6px;
-        padding: 6px 11px;
-        flex: 1;
-        min-width: 180px;
-        max-width: 300px;
-        transition: border-color 0.2s, box-shadow 0.2s;
-    }
+.orders-header h2 {
+    font-family: 'Sora', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+    white-space: nowrap;
+    letter-spacing: -0.5px;
+}
 
-    .search-wrapper:focus-within {
-        border-color: #337ab7;
-        box-shadow: 0 0 0 3px rgba(51,122,183,0.15);
-        background: #fff;
-    }
+/* ── Search ── */
+.search-wrapper {
+    position: relative;
+    flex: 1;
+    min-width: 180px;
+    max-width: 320px;
+}
 
-    .search-wrapper svg {
-        flex-shrink: 0;
-        color: #9ca3af;
-    }
+.search-wrapper .search-icon {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    pointer-events: none;
+    display: flex;
+}
 
-    .search-input {
-        border: none;
-        outline: none;
-        font-size: 14px;
-        color: #1f2937;
-        width: 100%;
-        background: transparent;
-        font-family: inherit;
-    }
+.search-wrapper input {
+    width: 100%;
+    padding: 10px 14px 10px 40px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    background: #fff;
+    outline: none;
+    color: #1e293b;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
 
-    .search-input::placeholder { color: #9ca3af; }
+.search-wrapper input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.13);
+}
 
-    /* spacer pushes filter to far right */
-    .header-spacer { flex: 1; }
+/* ── Total count ── */
+.total-count {
+    margin-left: auto;
+    font-size: 13px;
+    color: #94a3b8;
+    font-weight: 500;
+    white-space: nowrap;
+}
 
-    /* ── Filter ── */
-    .orders-filter {
-        display: flex;
-        gap: 6px;
-        align-items: center;
-    }
+/* ── Table Card ── */
+.table-card {
+    background: #fff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 14px;
+    overflow: hidden;
+}
 
-    .orders-filter select,
-    .orders-filter button {
-        padding: 6px 10px;
-        font-size: 14px;
-    }
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+}
 
-    .orders-filter button {
-        background: #337ab7;
-        color: #fff;
-        border: none;
-        cursor: pointer;
-        border-radius: 3px;
-        transition: background 0.2s;
-    }
+.orders-table thead tr { background: #f8fafc; border-bottom: 2px solid #e2e8f0; }
 
-    .orders-filter button:hover { background: #286090; }
+.orders-table th {
+    padding: 13px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-align: left;
+}
 
-    /* ── Table ── */
-    .orders-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-    }
+.orders-table td {
+    padding: 13px 16px;
+    font-size: 14px;
+    color: #1e293b;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
 
-    .orders-table th {
-        background: #f5f5f5;
-        text-align: left;
-        padding: 10px;
-        border-bottom: 2px solid #ddd;
-        font-size: 14px;
-    }
+.orders-table tbody tr:last-child td { border-bottom: none; }
+.orders-table tbody tr { transition: background 0.15s; }
+.orders-table tbody tr:hover { background: #f8fafc; }
+.orders-table tbody tr:nth-child(even) { background: #fafbfc; }
+.orders-table tbody tr:nth-child(even):hover { background: #f1f5f9; }
+.orders-table tr.row-hidden { display: none; }
 
-    .orders-table td {
-        padding: 10px;
-        border-bottom: 1px solid #eee;
-        font-size: 14px;
-    }
+.order-name-cell { font-weight: 700; color: #0f172a; }
+.price-cell { font-weight: 700; color: #0f172a; }
+.date-cell  { color: #64748b; font-size: 13px; }
 
-    .orders-table tr.hidden { display: none; }
+/* ── Status Badges ── */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12.5px;
+    font-weight: 700;
+    white-space: nowrap;
+}
 
-    .status-complete {
-        color: #3c763d;
-        background: #dff0d8;
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 12px;
-    }
+.badge-pending   { background: #fff4e5; color: #e07b00; border: 1.5px solid #fcd9a0; }
+.badge-complete  { background: #e6f9f0; color: #16a34a; border: 1.5px solid #a3e6c5; }
+.badge-cancelled { background: #fff0f0; color: #e03e3e; border: 1.5px solid #f9b8b8; }
 
-    .btn-view {
-        background: #337ab7;
-        color: #fff;
-        padding: 6px 12px;
-        text-decoration: none;
-        border-radius: 4px;
-        font-size: 13px;
-    }
+/* ── View Button ── */
+.btn-view {
+    display: inline-block;
+    background: #eff6ff;
+    color: #2563eb;
+    padding: 6px 14px;
+    text-decoration: none;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1.5px solid #bfdbfe;
+    transition: background 0.15s, color 0.15s;
+}
 
-    .btn-view:hover { background: #286090; }
+.btn-view:hover {
+    background: #2563eb;
+    color: #fff;
+    border-color: #2563eb;
+}
 
-    .no-results-row { display: none; }
+/* ── Empty / No results ── */
+.empty-cell {
+    text-align: center;
+    padding: 48px;
+    color: #94a3b8;
+    font-size: 15px;
+}
+
+#no-results-row { display: none; }
 </style>
 
 <div class="orders-wrapper">
 
     <div class="orders-header">
-        <h2>Orders</h2>
+        <h2>📦 Orders</h2>
 
-        <!-- Search bar — left side, right after title -->
         <div class="search-wrapper">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="2"
-                 stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="11" cy="11" r="8"/>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-            </svg>
-            <input class="search-input" id="orderSearch"
-                   type="text" placeholder="Search orders…" autocomplete="off">
+            <span class="search-icon">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                </svg>
+            </span>
+            <input type="text" id="order-search" placeholder="Search orders..." autocomplete="off">
         </div>
+    </div>
 
-        <div class="header-spacer"></div>
+    <div class="table-card">
+        <table class="orders-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>User</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="orders-tbody">
+                {% for order in orders %}
+                <tr data-name="{{ order.order_name|lower|cut:'order - '|cut:'order- ' }}"
+                    data-user="{{ order.user.username|lower }}"
+                    data-status="{{ order.get_status_display|lower }}">
+                    <td style="color:#cbd5e1; font-weight:700; font-size:13px;">{{ forloop.counter }}</td>
+                    <td class="order-name-cell">{{ order.order_name|cut:"Order - "|cut:"order - " }}</td>
+                    <td>{{ order.user.username }}</td>
+                    <td class="price-cell">₹{{ order.total_price }}</td>
+                    <td>
+                        <span class="badge
+                            {% if order.status == 'complete' %}badge-complete
+                            {% elif order.status == 'cancelled' %}badge-cancelled
+                            {% else %}badge-pending{% endif %}">
+                            {{ order.get_status_display }}
+                        </span>
+                    </td>
+                    <td class="date-cell">{{ order.created_at|date:"d-m-Y" }}</td>
+                    <td>
+                        <a href="{% url 'order_detail' order.id %}" class="btn-view">View →</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="empty-cell">📋 No orders found.</td>
+                </tr>
+                {% endfor %}
 
-        
-    <table class="orders-table">
-        <thead>
-            <tr>
-                <th>Order Name</th>
-                <th>User</th>
-                <th>Total</th>
-                <th>Status</th>
-                <th>Date</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody id="ordersBody">
-            {% for order in orders %}
-            <tr data-name="{{ order.order_name|lower }}"
-                data-user="{{ order.user.username|lower }}"
-                data-status="{{ order.get_status_display|lower }}">
-                <td>{{ order.order_name }}</td>
-                <td>{{ order.user.username }}</td>
-                <td>₹ {{ order.total_price }}</td>
-                <td>
-                    <span class="status-complete">
-                        {{ order.get_status_display }}
-                    </span>
-                </td>
-                <td>{{ order.created_at|date:"d-m-Y" }}</td>
-                <td>
-                    <a href="{% url 'order_detail' order.id %}" class="btn-view">View</a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="6">No orders found.</td>
-            </tr>
-            {% endfor %}
-
-            <!-- shown when search/filter yields nothing -->
-            <tr class="no-results-row" id="noResultsRow">
-                <td colspan="6" style="text-align:center; color:#6b7280;">
-                    No orders match your search.
-                </td>
-            </tr>
-        </tbody>
-    </table>
+                <tr id="no-results-row">
+                    <td colspan="7" class="empty-cell">No orders match your search.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
 </div>
 
 <script>
-const searchInput  = document.getElementById('orderSearch');
-const statusFilter = document.getElementById('statusFilter');
-const rows         = document.querySelectorAll('#ordersBody tr[data-name]');
-const noResultsRow = document.getElementById('noResultsRow');
+var searchInput = document.getElementById('order-search');
+var rows        = document.querySelectorAll('#orders-tbody tr[data-name]');
+var noResults   = document.getElementById('no-results-row');
 
-function filterRows() {
-    const query  = searchInput.value.trim().toLowerCase();
-    const status = statusFilter.value.toLowerCase();
-    let visible  = 0;
+searchInput.addEventListener('input', function() {
+    var q = searchInput.value.toLowerCase().trim();
+    var visible = 0;
 
-    rows.forEach(row => {
-        const matchSearch = !query ||
-            row.dataset.name.includes(query) ||
-            row.dataset.user.includes(query);
-        const matchStatus = !status || row.dataset.status.includes(status);
-
-        const show = matchSearch && matchStatus;
-        row.classList.toggle('hidden', !show);
+    rows.forEach(function(row) {
+        var name = row.dataset.name || '';
+        var user = row.dataset.user || '';
+        var show = !q || name.includes(q) || user.includes(q);
+        row.classList.toggle('row-hidden', !show);
         if (show) visible++;
     });
 
-    noResultsRow.style.display = visible === 0 ? 'table-row' : 'none';
-}
-
-// Live search as user types
-searchInput.addEventListener('input', filterRows);
-
-// Filter button applies status dropdown
-function applyFilter() { filterRows(); }
+    noResults.style.display = (visible === 0 && q) ? 'table-row' : 'none';
+});
 </script>
 
 {% endblock %}

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import Staff
 
-def staff_index(request):   # 👈 പേര് മാറ്റി
+def staff_index(request):   
     if request.method == "POST":
         Staff.objects.create(
             name=request.POST['name'],

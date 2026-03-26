@@ -51,4 +51,3 @@ class OrderAdmin(admin.ModelAdmin):
         }
         return render(request, 'admin/orders/estimate_bill.html', context)
 
-# ❌ AdminStore class ഇവിടെ വേണ്ട — store/admin.py-ൽ add ചെയ്യണം

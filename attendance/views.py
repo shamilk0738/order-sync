@@ -4,7 +4,7 @@ from staff.models import Staff
 from .models import Attendance
 
 
-# ✅ Summary Page
+
 def attendance_summary(request):
     today = timezone.localdate()
 
@@ -42,7 +42,7 @@ def attendance_summary(request):
     })
 
 
-# ✅ Mark Attendance (Today മാത്രം)
+
 def mark_attendance(request):
     today = timezone.localdate()
     staff_list = Staff.objects.all()
@@ -58,7 +58,7 @@ def mark_attendance(request):
                     defaults={'status': status}
                 )
 
-        return redirect('attendance_summary')  # after save
+        return redirect('attendance_summary')  
 
     return render(request, "attendance/summary.html", {
         'staff_list': staff_list,

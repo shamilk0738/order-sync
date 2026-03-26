@@ -278,7 +278,7 @@
 
 {% block content %}
 
-{# Django data — HTML attribute-ൽ വയ്ക്കുന്നു, script-ൽ template tags ഇല്ല #}
+
 <div id="page-data"
      data-store-id="{% if store %}{{ store.id }}{% else %}{% endif %}"
      data-create-order-url="{% url 'create_order' %}"
@@ -398,7 +398,7 @@
 </div>
 
 <script>
-// Django data — HTML data attribute-ൽ നിന്ന് വായിക്കുന്നു (script-ൽ template tags ഇല്ല)
+
 var pageData        = document.getElementById('page-data');
 var storeId         = pageData.dataset.storeId;
 var createOrderUrl  = pageData.dataset.createOrderUrl;
@@ -451,7 +451,7 @@ if (storeInput && storeDropdown) {
     });
 }
 
-// ── Quantity Save / Restore via localStorage ──
+
 if (storeId) {
     var STORE_KEY = 'order_quantities_' + storeId;
 

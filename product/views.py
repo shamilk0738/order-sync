@@ -8,12 +8,12 @@ def product_list(request):
     })
 
 
-# Product detail page
+
 def product_detail(request, id):
     product = get_object_or_404(Product, id=id)
     total = None
 
-    # Back button-നായി store_id എടുക്കുന്നു
+    
     store_id = request.GET.get('store_id') or request.POST.get('store_id', '')
 
     if request.method == "POST":
@@ -23,5 +23,5 @@ def product_detail(request, id):
     return render(request, 'product/product_item.html', {
         'product': product,
         'total': total,
-        'store_id': store_id,  # template-ലേക്ക് pass ചെയ്യുന്നു
+        'store_id': store_id,  
     })

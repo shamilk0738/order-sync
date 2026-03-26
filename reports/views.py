@@ -9,9 +9,7 @@ from store.models import AdminStore
 from product.models import Product
 
 
-# ══════════════════════════════════════════════════════
-#  HELPER — Period filter (shared by all reports)
-# ══════════════════════════════════════════════════════
+
 def get_period(request, default='today'):
     period = request.GET.get('period', default)
     today  = timezone.now().date()
@@ -32,9 +30,7 @@ def get_period(request, default='today'):
     return 'today', today, today, 'Today'
 
 
-# ══════════════════════════════════════════════════════
-#  1. SALES REPORT
-# ══════════════════════════════════════════════════════
+
 @login_required
 def sales_report(request):
     period, start, end, label = get_period(request, default='today')
@@ -92,9 +88,7 @@ def sales_report(request):
     })
 
 
-# ══════════════════════════════════════════════════════
-#  2. STAFF PERFORMANCE REPORT
-# ══════════════════════════════════════════════════════
+
 @login_required
 def staff_performance_report(request):
     period, start, end, label = get_period(request, default='month')
@@ -104,7 +98,7 @@ def staff_performance_report(request):
         created_at__date__lte=end,
     )
 
-    # Per-staff stats
+    
     staff_stats = (
         orders_qs
         .values('user__id', 'user__username', 'user__first_name', 'user__last_name')
@@ -183,9 +177,7 @@ def staff_performance_report(request):
     })
 
 
-# ══════════════════════════════════════════════════════
-#  3. STORE-WISE REPORT
-# ══════════════════════════════════════════════════════
+
 @login_required
 def store_report(request):
     period, start, end, label = get_period(request, default='month')
@@ -196,7 +188,7 @@ def store_report(request):
         created_at__date__lte=end,
     )
 
-    # All stores summary
+    
     store_summary = (
         orders_qs
         .values('store__id', 'store__store_name')
@@ -282,9 +274,7 @@ def store_report(request):
     })
 
 
-# ══════════════════════════════════════════════════════
-#  4. PRODUCT REPORT
-# ══════════════════════════════════════════════════════
+
 @login_required
 def product_report(request):
     period, start, end, label = get_period(request, default='month')

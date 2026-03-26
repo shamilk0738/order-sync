@@ -62,7 +62,7 @@ body { font-family: var(--font); }
 
 .db-welcome b { color: var(--text); }
 
-/* ── Summary cards ── */
+
 .db-cards {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -213,7 +213,7 @@ body { font-family: var(--font); }
 .donut-wrap { text-align: center; }
 .donut-label { font-size: 12px; color: var(--muted); margin-top: 8px; font-weight: 600; }
 
-/* SVG donut chart */
+
 .donut-svg { transform: rotate(-90deg); }
 .donut-bg  { fill: none; stroke: #f1f5f9; stroke-width: 8; }
 .donut-fill-green  { fill: none; stroke: #16a34a; stroke-width: 8; stroke-linecap: round; transition: stroke-dasharray .8s ease; }
@@ -229,7 +229,7 @@ body { font-family: var(--font); }
 .donut-center .num  { font-size: 20px; font-weight: 800; color: var(--text); line-height: 1; }
 .donut-center .sub  { font-size: 10px; color: var(--muted); font-weight: 600; }
 
-/* ── Bottom grid ── */
+
 .db-grid2 {
     display: grid;
     grid-template-columns: 1fr 380px;
@@ -238,11 +238,11 @@ body { font-family: var(--font); }
 
 @media (max-width: 1100px) { .db-grid2 { grid-template-columns: 1fr; } }
 
-/* ── Bar chart area ── */
+
 .chart-body { padding: 20px; }
 .chart-wrap { height: 180px; position: relative; }
 
-/* ── Top products ── */
+
 .products-body { padding: 16px 20px; display: flex; flex-direction: column; gap: 14px; }
 
 .prod-row { display: flex; align-items: center; gap: 12px; }
@@ -474,7 +474,7 @@ body { font-family: var(--font); }
 
 </div>
 
-<!-- Chart JS -->
+
 <script>
 const visitDays   = {{ visit_days|safe }};
 const visitCounts = {{ visit_counts|safe }};

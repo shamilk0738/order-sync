@@ -22,10 +22,10 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    # LOGIN / REGISTER FIRST
+    
     path('', include('employees.urls')),
 
-    # other apps
+    
     path('dashboard/', include('dashboard.urls')),
     path('staff/', include('staff.urls')),
     path('product/', include('product.urls')),

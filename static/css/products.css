@@ -1,6 +1,4 @@
-/* products.css */
 
-/* General body styling */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f9f9f9;
@@ -8,7 +6,7 @@ body {
     /* margin: 20px; */
 }
 
-/* Container */
+
 .order-container {
     max-width: 800px;
     margin: auto;

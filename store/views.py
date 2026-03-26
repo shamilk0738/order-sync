@@ -16,16 +16,13 @@ def store_detail(request, id):
     return render(request, 'store/store_front.html', {'store': store})
 
 
-# ─────────────────────────────────────────────
-# Store Orders — grouped by date
-# Click store name → see all orders by date
-# ─────────────────────────────────────────────
+
 @login_required
 def store_orders(request, id):
     store  = get_object_or_404(AdminStore, id=id)
     orders = Order.objects.filter(store=store).order_by('-created_at')
 
-    # Group orders by date
+    
     grouped = {}
     for order in orders:
         date_key = order.created_at.date()
@@ -33,5 +30,5 @@ def store_orders(request, id):
 
     return render(request, 'store/store_orders.html', {
         'store':   store,
-        'grouped': grouped,   # dict: {date: [order, ...]}
+        'grouped': grouped,   
     })

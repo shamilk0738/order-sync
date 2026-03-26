@@ -14,7 +14,7 @@ def admin_dashboard(request):
 
     today = timezone.now().date()
 
-    # ── Summary cards ──────────────────────────────────────────
+    
     total_orders   = Order.objects.count()
     pending_orders = Order.objects.filter(status='pending').count()
     staff_members  = User.objects.filter(is_active=True).count()
@@ -22,14 +22,14 @@ def admin_dashboard(request):
         created_at__date=today
     ).values('store').distinct().count()
 
-    # ── Latest orders ──────────────────────────────────────────
+    
     latest_orders = (
         Order.objects
         .select_related('store', 'user')
         .order_by('-created_at')[:5]
     )
 
-    # ── Attendance overview ────────────────────────────────────
+    
     try:
         from attendance.models import Attendance
         today_present = Attendance.objects.filter(
@@ -47,7 +47,7 @@ def admin_dashboard(request):
         today_present = 0
         monthly_pct   = 0
 
-    # ── Top products ───────────────────────────────────────────
+    
     try:
         top_products = (
             OrderItem.objects
@@ -61,7 +61,7 @@ def admin_dashboard(request):
     # Max qty for progress bar width
     max_qty = top_products[0]['total_qty'] if top_products else 1
 
-    # ── Visit activity (last 5 days) ───────────────────────────
+    
     visit_days   = []
     visit_counts = []
     for i in range(4, -1, -1):

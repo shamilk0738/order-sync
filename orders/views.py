@@ -36,6 +36,8 @@ def create_order(request):
             )
             for product, qty in items_to_save:
                 OrderItem.objects.create(order=order, product=product, quantity=qty)
+                
+                Product.objects.filter(id=product.id).update(stock=product.stock - qty)
             order.recalculate_total()
             return redirect('order_detail', order.id)
 
@@ -96,6 +98,8 @@ def order_detail(request, id):
                     existing.save()
                 else:
                     OrderItem.objects.create(order=order, product=product, quantity=new_qty)
+                # Stock decrease ചെയ്യുന്നു
+                Product.objects.filter(id=product.id).update(stock=product.stock - new_qty)
                 order.recalculate_total()
 
         return redirect('order_detail', order.id)
